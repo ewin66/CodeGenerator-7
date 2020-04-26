@@ -80,12 +80,12 @@ namespace CodeGenerator.BusinessService.Base_SysManage
                     //业务层
                     if (buildTypeList.Exists(x => x.ToLower() == "business"))
                     {
-                        BuildSmallBusiness(tableFieldInfo, areaName, aTable);
+                        BuildSmallBusiness(tableFieldInfo, areaName, aTable, path);
                     }
                     //控制器
                     if (buildTypeList.Exists(x => x.ToLower() == "controller"))
                     {
-                        BuildSmallController(tableFieldInfo, areaName, aTable);
+                        BuildSmallController(tableFieldInfo, areaName, aTable, path);
                     }
                     ////视图
                     //if (buildTypeList.Exists(x => x.ToLower() == "view"))
@@ -723,12 +723,12 @@ $@"@using CodeGenerator.Entity.Dto;
         /// </summary>
         /// <param name="areaName">区域名</param>
         /// <param name="entityName">实体名</param>
-        private void BuildSmallBusiness(List<TableInfo> tableFieldInfo, string areaName, string entityName)
+        private void BuildSmallBusiness(List<TableInfo> tableFieldInfo, string areaName, string entityName, string path)
         {
 
             string createTimeBusiness = null;
             StringBuilder boolTypeBusiness = new StringBuilder();
-            string usingEnumBusiness = tableFieldInfo.Any(x => x.Name.StartsWith("Is")) ? $@"using CodeGenerator.Entity.Enums;" : null;
+            string usingEnumBusiness = tableFieldInfo.Any(x => x.Name.StartsWith("Is")) ? $@"using OpenAuth.Domain.Enums;" : null;
 
             tableFieldInfo.Where(x => x.Name.Equals("CreateTime")).ForEach((aField, index) =>
             {
@@ -745,164 +745,63 @@ $@"@using CodeGenerator.Entity.Dto;
                 boolTypeBusiness.Append(newOption);
             });
 
+            var tableName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Replace("small_", "")).Replace("_", "");
 
             string code =
-$@"using System;
+$@"using System.Linq;
+using OpenAuth.Domain.Request;
+using OpenAuth.Domain.Response;
+using OpenAuth.Domain.Entitys;
+using OpenAuth.Repository.Interface;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using CodeGenerator.Util;
-using CodeGenerator.Entity.Dto;
-using CodeGenerator.Entity.{areaName};
-using CodeGenerator.BusinessService.IService;
 {usingEnumBusiness}
 
-namespace CodeGenerator.BusinessService.{areaName}
+namespace OpenAuth.App
 {{
-    public class {entityName}Service : BaseService<{entityName}>, I{entityName}Service
+public class {tableName}App : BaseApp<{tableName}>
     {{
-        #region 外部接口
-
-        /// <summary>
-        /// 获取数据列表
-        /// </summary>
-        /// <param name=""condition"">查询类型</param>
-        /// <param name=""keyword"">关键字</param>
-        /// <returns></returns>
-        public List<{entityName}Dto> GetDataList(string condition, string keyword, Pagination pagination)
+        public {tableName}App(IUnitWork unitWork, IRepository<{tableName}> repository) : base(unitWork, repository, null)
         {{
-            var q = GetIQueryable();
-
-            //模糊查询
-            if (!condition.IsNullOrEmpty() && !keyword.IsNullOrEmpty())
-                q = q.Where($@""{{condition}}.Contains(@0)"", keyword);
-            var list = q.GetPagination(pagination).ToList().MapTo<{entityName}Dto>();
-            {boolTypeBusiness.ToString()}
-            return list;
         }}
 
         /// <summary>
-        /// 获取指定的单条数据
+        /// 加载列表
         /// </summary>
-        /// <param name=""id"">主键</param>
-        /// <returns></returns>
-        public {entityName}Dto GetTheData(string id)
+        public TableData<List<{tableName}>> Load(PageExtend request)
         {{
-            var model = GetEntity(id).MapTo<{entityName}Dto>(); ;
-            return model;
-        }}
+            var result = new TableData<List<{tableName}>>();
+            var query = UnitWork.Find<{tableName}>(null);
 
-        /// <summary>
-        /// 添加数据
-        /// </summary>
-        /// <param name=""newData"">数据</param>
-        public int AddData({entityName}Dto newData)
-        {{
-            newData.{tableFieldInfo[0].Name} = Guid.NewGuid().ToSequentialGuid();
-            {createTimeBusiness}
+            query = QueryableExtensions.ExtKeyQuery(query, request.keyQuery);
 
-            var result = Insert(newData);
-            if (result == 0)
-                throw new Exception(""添加失败！"");
+            result.count = query.Count();
+            if (result.count == 0)
+                return result;
 
+            result.data = query.OrderByDescending(u => u.CreateTime)
+                .Skip((request.page - 1) * request.limit)
+                .Take(request.limit).ToList();
             return result;
         }}
 
-        /// <summary>
-        /// 更新数据
-        /// </summary>
-        public int UpdateData({entityName}Dto theData)
+        public void Add({tableName} obj)
         {{
-            var result = Update(theData);
-            if (result == 0)
-                throw new Exception(""更新失败！"");
-
-            return result;
+            //程序类型取入口应用的名称，可以根据自己需要调整
+            Repository.Add(obj);
         }}
-
-        /// <summary>
-        /// 删除数据
-        /// </summary>
-        /// <param name=""theData"">删除的数据</param>
-        public int DeleteData(List<string> ids)
+        
+        public void Update({tableName} obj)
         {{
-            var result = Delete(ids);
-            if (result == 0)
-                throw new Exception(""删除失败！"");
-
-            return result;
+            UnitWork.Update<{tableName}>(u => u.Id == obj.Id, u => new {tableName}
+            {{
+               //todo:要修改的字段赋值
+            }});
         }}
-
-        #endregion
-
-        #region 私有成员
-
-        #endregion
-
-        #region 数据模型
-
-        #endregion
     }}
 }}";
-            string businessPath = _contentRootPath.Replace("CodeGenerator.Web", "CodeGenerator.BusinessService");
-            string filePath = Path.Combine(businessPath, "Service", $"{entityName}Service.cs");
+            string filePath = Path.Combine(path, "OpenAuth.App", $"{tableName}App.cs");
 
             FileHelper.WriteTxt(code, filePath, FileMode.Create);
-
-            string icode = $@"
-using System.Collections.Generic;
-using CodeGenerator.Util;
-using CodeGenerator.Entity.Dto;
-
-namespace CodeGenerator.BusinessService.IService
-{{
-    public interface I{entityName}Service
-    {{
-        #region 外部接口
-
-        /// <summary>
-        /// 获取数据列表
-        /// </summary>
-        /// <param name=""condition"" >查询类型</param>
-        /// <param name=""keyword"" >关键字</param>
-        /// <returns></returns>
-        List<{entityName}Dto> GetDataList(string condition, string keyword, Pagination pagination);
-
-        /// <summary>
-        /// 获取指定的单条数据
-        /// </summary>
-        /// <param name=""id"" >主键</param>
-        /// <returns></returns>
-        {entityName}Dto GetTheData(string id);
-
-
-        /// <summary>
-        /// 添加数据
-        /// </summary>
-        /// <param name=""newData"" >数据</param>
-        int AddData({entityName}Dto newData);
-
-        /// <summary>
-        /// 更新数据
-        /// </summary>
-        int UpdateData({entityName}Dto theData);
-
-        /// <summary>
-        /// 删除数据
-        /// </summary>
-        /// <param name=""theData"" >删除的数据</param>
-        int DeleteData(List<string> ids);
-        #endregion
-       
-    }}     
-}}";
-
-            string ibusinessPath = _contentRootPath.Replace("CodeGenerator.Web", "CodeGenerator.BusinessService");
-            string ifilePath = Path.Combine(ibusinessPath, "IService", $"I{entityName}Service.cs");
-
-            FileHelper.WriteTxt(icode, ifilePath, FileMode.Create);
-
-
         }
 
         /// <summary>
@@ -910,98 +809,127 @@ namespace CodeGenerator.BusinessService.IService
         /// </summary>
         /// <param name="areaName">区域名</param>
         /// <param name="entityName">实体名</param>
-        private void BuildSmallController(List<TableInfo> tableFieldInfo, string areaName, string entityName)
+        private void BuildSmallController(List<TableInfo> tableFieldInfo, string areaName, string entityName, string path)
         {
-            string varService = $@"_{entityName.ToFirstLowerStr()}Service";
-            string varBusiness = $@"{entityName.ToFirstLowerStr()}Service";
+            var tableName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Replace("small_", "")).Replace("_", "");
+
             string code =
 $@"using System;
+using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using CodeGenerator.Util;
-using CodeGenerator.Entity.Dto;
-using CodeGenerator.BusinessService.IService;
+using OpenAuth.App;
+using OpenAuth.Domain.Request;
+using OpenAuth.Domain.Response;
+using OpenAuth.Domain.Entitys;
+using System.Collections.Generic;
 
-namespace CodeGenerator.Web
+namespace OpenAuth.WebApi.Controllers.{areaName}
 {{
-    //[Area(""{areaName}"")]
-    public class {entityName}Controller : BaseMvcController
+    /// <summary>
+    /// {_dbTableInfoDic[entityName].Description}
+    /// </summary>
+    [Route(""api /[controller] /[action]"")]
+    [ApiExplorerSettings(GroupName = ""v2"")]
+    [ApiController]
+    public class {tableName}Controller : ControllerBase
     {{
-        private I{entityName}Service {varService} {{ get; }}
-        public {entityName}Controller(I{entityName}Service {varBusiness}) {{
-            {varService} = {varBusiness};
-        }}
-        #region 视图功能
+        private readonly {tableName}App _app;
 
-        public ActionResult Index()
+        public {tableName}Controller({tableName}App app)
         {{
-            return View();
+            _app = app;
         }}
 
-        public ActionResult Form(string id)
+        //获取详情
+        [HttpGet]
+        public Response<{tableName}> Get(string id)
         {{
-            var theData = id.IsNullOrEmpty() ? new {entityName}Dto() : {varService}.GetTheData(id);
-
-            return View(theData);
-        }}
-
-        #endregion
-
-        #region 获取数据
-
-        /// <summary>
-        /// 获取数据列表
-        /// </summary>
-        /// <param name=""condition"">查询类型</param>
-        /// <param name=""keyword"">关键字</param>
-        /// <returns></returns>
-        public ActionResult GetDataList(string condition, string keyword, Pagination pagination)
-        {{
-            var dataList = {varService}.GetDataList(condition, keyword, pagination);
-
-            return Content(pagination.BuildTableResult_DataGrid(dataList).ToJson());
-        }}
-
-        #endregion
-
-        #region 提交数据
-
-        /// <summary>
-        /// 保存
-        /// </summary>
-        /// <param name=""theData"">保存的数据</param>
-        public ActionResult SaveData({entityName}Dto theData)
-        {{
-            if(theData.{tableFieldInfo[0].Name}.IsNullOrEmpty())
+            var result = new Response<{tableName}>();
+            try
             {{
-                {varService}.AddData(theData);
+                result.Result = _app.Get(id);
             }}
-            else
+            catch (Exception ex)
             {{
-                {varService}.UpdateData(theData);
+                result.Code = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
             }}
 
-            return Success();
+            return result;
         }}
 
         /// <summary>
-        /// 删除数据
+        /// 添加
         /// </summary>
-        /// <param name=""theData"">删除的数据</param>
-        public ActionResult DeleteData(string ids)
+        [HttpPost]
+        public Response Add({tableName} obj)
         {{
-            {varService}.DeleteData(ids.ToList<string>());
+            var result = new Response();
+            try
+            {{
+                _app.Add(obj);
+            }}
+            catch (Exception ex)
+            {{
+                result.Code = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }}
 
-            return Success(""删除成功！"");
+            return result;
         }}
 
-        #endregion
+        /// <summary>
+        /// 修改
+        /// </summary>
+        [HttpPost]
+        public Response Update({tableName} obj)
+        {{
+            var result = new Response();
+            try
+            {{
+                _app.Update(obj);
+            }}
+            catch (Exception ex)
+            {{
+                result.Code = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }}
+
+            return result;
+        }}
+
+        /// <summary>
+        /// 加载列表
+        /// </summary>
+        [HttpGet]
+        public TableData<List<{tableName}>> Load([FromQuery]PageExtend request)
+        {{
+            return _app.Load(request);
+        }}
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        [HttpPost]
+        public Response Delete([FromBody]string[] ids)
+        {{
+            var result = new Response();
+            try
+            {{
+                _app.Delete(ids);
+            }}
+            catch (Exception ex)
+            {{
+                result.Code = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }}
+
+            return result;
+        }}
     }}
 }}";
-            string filePath = Path.Combine(_contentRootPath, "Areas", areaName, "Controllers", $"{entityName}Controller.cs");
+            string filePath = Path.Combine(path, "OpenAuth.WebApi", "Controllers", areaName, $"{tableName}Controller.cs");
             FileHelper.WriteTxt(code, filePath, FileMode.Create);
-
-
-
         }
 
 
