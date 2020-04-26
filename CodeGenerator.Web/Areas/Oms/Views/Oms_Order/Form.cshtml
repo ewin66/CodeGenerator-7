@@ -1,0 +1,130 @@
+@using CodeGenerator.Entity.Dto;
+@using CodeGenerator.Util;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+
+    var obj = (Oms_OrderDto)Model;
+    var objStr = Html.Raw(obj.ToJson());
+}
+
+<form id="dataForm" enctype="multipart/form-data" class="easyui-form" method="post" data-options="novalidate:true">
+    <table class="table_base">
+        <colgroup>
+            <col style="width:80px;" />
+        </colgroup>
+        <tbody>
+            
+                        <tr>
+                            <th>订单号</th>
+                            <td>
+                                <input name="OrderNo" value="@obj.OrderNo" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>收货人姓名</th>
+                            <td>
+                                <input name="ContactName" value="@obj.ContactName" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>收货电话</th>
+                            <td>
+                                <input name="ContactPhone" value="@obj.ContactPhone" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>收货地址</th>
+                            <td>
+                                <input name="ContactAddress" value="@obj.ContactAddress" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>总数量</th>
+                            <td>
+                                <input name="SumNum" value="@obj.SumNum" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>总金额</th>
+                            <td>
+                                <input name="SumPrice" value="@obj.SumPrice" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>总成本</th>
+                            <td>
+                                <input name="TotalCost" value="@obj.TotalCost" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>订单来源</th>
+                            <td>
+                                <input name="Source" value="@obj.Source" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>订单状态</th>
+                            <td>
+                                <input name="Status" value="@obj.Status" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>付款渠道</th>
+                            <td>
+                                <input name="PayChannel" value="@obj.PayChannel" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>外部单号</th>
+                            <td>
+                                <input name="OuterNo" value="@obj.OuterNo" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>备注</th>
+                            <td>
+                                <input name="Remark" value="@obj.Remark" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>是否删除</th>
+                            <td>
+                                <select name="IsDelete" class="easyui - combobox" data-options="width: 200,value: '@obj.IsDelete',required: true" >
+                                    <option value = "false"> 否 </option>
+                                    <option value = "true"> 是 </option>
+                                </ select >
+                            </td>
+                        </tr>
+        </tbody>
+    </table>
+</form>
+
+@section foottoolbar{
+    <a id="saveForm" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+}
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var theEntity = @objStr;
+
+    $(function () {
+        $('#saveForm').click(function () {
+            if (!$('#dataForm').form('enableValidation').form('validate'))
+                return;
+
+            var formValues = $('#dataForm').getValues();
+            $.extend(theEntity, formValues);
+            $.postJSON(rootUrl + 'Oms/Oms_Order/SaveData', theEntity, function (resJson) {
+                if (resJson.Success) {
+                    parent.dialogMsg('保存成功!');
+                    parent.$('#dataTable').datagrid('clearChecked').datagrid('reload');
+                    parent.dialogClose('form');
+                }
+                else {
+                    dialogError(resJson.Msg);
+                }
+            });
+        });
+    });
+</script>

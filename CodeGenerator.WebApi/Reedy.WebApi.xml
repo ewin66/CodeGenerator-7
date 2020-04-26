@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CodeGenerator.WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:CodeGenerator.WebApi.FilterSwagger">
+            <summary>
+            Swagger 标签备注
+            </summary>
+        </member>
+        <member name="M:CodeGenerator.WebApi.FilterSwagger.Apply(Swashbuckle.AspNetCore.Swagger.SwaggerDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <summary>
+             大标签备注
+            </summary>
+            <param name="swaggerDoc"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:CodeGenerator.WebApi.CheckLoginAttribute.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            Action执行完毕之前执行
+            </summary>
+            <param name="filterContext"></param>
+        </member>
+        <member name="M:CodeGenerator.WebApi.CheckLoginAttribute.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            Action执行完毕之后执行
+            </summary>
+            <param name="filterContext"></param>
+        </member>
+        <member name="T:CodeGenerator.WebApi.IgnoreLoginAttribute">
+            <summary>
+            忽略登录校验
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.WebApi.WebApiExceptionFilterAttribute">
+            <summary>
+            异常处理方法
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.WebApi.BaseController">
+            <summary>
+            Mvc基控制器
+            </summary>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Content(System.String)">
+            <summary>
+            默认返回JSON
+            </summary>
+            <param name="content">JSON字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Success">
+            <summary>
+            返回成功
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Success(System.String)">
+            <summary>
+            返回成功
+            </summary>
+            <param name="msg">消息</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Success(System.Object)">
+            <summary>
+            返回成功
+            </summary>
+            <param name="data">返回的数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.ResultObject(System.Object)">
+            <summary>
+            返回成功
+            </summary>
+            <param name="data">返回的数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Success(System.String,System.Object)">
+            <summary>
+            返回成功
+            </summary>
+            <param name="msg">返回的消息</param>
+            <param name="data">返回的数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Error">
+            <summary>
+            返回错误
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.Error(System.String)">
+            <summary>
+            返回错误
+            </summary>
+            <param name="msg">错误提示</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.UrlContains(System.String)">
+            <summary>
+            当前URL是否包含某字符串
+            注：忽略大小写
+            </summary>
+            <param name="subUrl">包含的字符串</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.WriteSysLog(System.String,CodeGenerator.Entity.Enums.EnumType.LogType)">
+            <summary>
+            写入日志
+            </summary>
+            <param name="logContent">日志内容</param>
+            <param name="logType">日志类型</param>
+        </member>
+        <member name="M:CodeGenerator.WebApi.BaseController.WriteSysLog(System.String)">
+            <summary>
+            写入日志
+            </summary>
+            <param name="logContent">日志内容</param>
+        </member>
+        <member name="P:CodeGenerator.WebApi.BaseController.LogType">
+            <summary>
+            日志类型
+            注：可通过具体控制器重写
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.WebApi.Controllers.LoginController">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Controllers.LoginController.GetJwtStr(CodeGenerator.Entity.Dto.Crm_CustomerDto)">
+            <summary>
+            获取JWT的方法1
+            </summary>
+            <param name="id">id</param>
+            <param name="sub">角色</param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Controllers.LoginController.GetJwtStrForNuxt(System.String,System.String)">
+            <summary>
+            获取JWT的方法2：给Nuxt提供
+            </summary>
+            <param name="name"></param>
+            <param name="pass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Controllers.LoginController.GetJwtToken3(CodeGenerator.Entity.Dto.Crm_CustomerDto)">
+            <summary>
+            获取JWT的方法3：整个系统主要方法
+            </summary>
+            <param name="name"></param>
+            <param name="pass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Controllers.LoginController.RefreshToken(CodeGenerator.Entity.Dto.Crm_CustomerDto)">
+            <summary>
+            请求刷新Token（以旧换新）
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CodeGenerator.WebApi.Controllers.UserController">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Controllers.UserController.UserLogin(CodeGenerator.Entity.Dto.Crm_CustomerDto)">
+            <summary>
+            用户登录
+            </summary>
+            <param name="theData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CodeGenerator.WebApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="env">core获取文件路径   通过注入IHostingEnvironment服务对象来取得Web根目录物理路径</param>
+        </member>
+    </members>
+</doc>

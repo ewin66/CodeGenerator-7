@@ -1,0 +1,142 @@
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+}
+
+@section toolbar{
+    <a id="add" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>
+    <a id="edit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</a>
+    <a id="delete" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+}
+
+@section search{
+    <div class="search_wrapper">
+        <div class="search_item">
+            <label class="search_label">查询类别</label>
+            <select name="condition" class="easyui-combobox" data-options="width:100">
+                <option value="">请选择</option>
+                
+                <option value="ProductNo">产品编号</option>
+                <option value="ProductName">产品名称</option>
+                <option value="Specification">单位规格</option>
+                <option value="Brand">品牌</option>
+                <option value="Place">产地</option>
+                <option value="Weight">净重</option>
+                <option value="Conditions">存储条件</option>
+            </select>
+            <input name="keyword" class="easyui-textbox" style="width:150px" />
+        </div>
+        <div class="search_submit">
+            <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchGrid(this,'#dataTable')">查询</a>
+        </div>
+    </div>
+}
+<div id="dataTable">
+
+</div>
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var formWidth = 500;
+    var formHeight = 585;
+
+    function initTable() {
+        $('#dataTable').datagrid({
+            url: rootUrl + 'Scm/Scm_Product/GetDataList',
+            method: 'POST',
+            //queryParams: { 'id': id },
+            idField: 'ProductId',
+            fit: true,
+            fitColumns: true,
+            singleSelect: false,
+            selectOnCheck: false,
+            checkOnSelect: false,
+            sortName: 'ProductId',
+            sortOrder: 'asc',
+            rownumbers: true,
+            pagination: true,
+            pageSize: 30,
+            //nowrap: false,
+            pageList: [10, 30, 50, 100, 200, 500, 1000],
+            //showFooter: true,
+            columns: [[
+                { title: 'ck', field: 'ck', checkbox: true },
+                
+                { title: '产品编号', field: 'ProductNo', width: 200 },
+                { title: '产品名称', field: 'ProductName', width: 200 },
+                { title: '成本价', field: 'CostPrice', width: 200 },
+                { title: '排序', field: 'Sort', width: 200 },
+                { title: '单位规格', field: 'Specification', width: 200 },
+                { title: '品牌', field: 'Brand', width: 200 },
+                { title: '产地', field: 'Place', width: 200 },
+                { title: '净重', field: 'Weight', width: 200 },
+                { title: '存储条件', field: 'Conditions', width: 200 },
+                { title: '是否禁用', field: 'DisableValue', width: 200 },
+                { title: '创建时间', field: 'CreateTime', width: 200 }
+            ]],
+            onBeforeLoad: function (param) {
+
+            },
+            onBeforeSelect: function () {
+                return false;
+            }
+        });
+    }
+
+    $(function () {
+        initTable();
+
+        //添加数据
+        $('#add').click(function () {
+            dialogOpen({
+                id: 'form',
+                title: '添加数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Scm/Scm_Product/Form',
+            });
+        });
+
+        //修改数据
+        $('#edit').click(function () {
+            var selected = $("#dataTable").datagrid("getChecked");
+            if (!selected || !selected.length) {
+                dialogError('请选择要修改的记录!');
+                return;
+            }
+            var id = selected[0].ProductId;
+
+            dialogOpen({
+                id: 'form',
+                title: '修改数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Scm/Scm_Product/Form?id=' + id,
+            });
+        });
+
+        //删除数据
+        $('#delete').click(function () {
+            var checked = $("#dataTable").datagrid("getChecked");
+            if (!checked || !checked.length) {
+                dialogError('请选择要删除的记录!');
+                return;
+            }
+            var ids = $.map(checked, function (item) {
+                return item['ProductId'];
+            });
+
+            dialogComfirm('确认删除吗？', function () {
+                $.postJSON(rootUrl + 'Scm/Scm_Product/DeleteData', { ids: JSON.stringify(ids) }, function (resJson) {
+                    if (resJson.Success) {
+                        $('#dataTable').datagrid('clearSelections').datagrid('clearChecked');
+                        $('#dataTable').datagrid('reload');
+                        dialogMsg('删除成功!');
+                    }
+                    else {
+                        dialogError(resJson.Msg);
+                    }
+                });
+            });
+        });
+    });
+</script>

@@ -1,0 +1,66 @@
+@using CodeGenerator.Entity.Dto;
+@using CodeGenerator.Util;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+
+    var obj = (Crm_CusGroupDto)Model;
+    var objStr = Html.Raw(obj.ToJson());
+}
+
+<form id="dataForm" enctype="multipart/form-data" class="easyui-form" method="post" data-options="novalidate:true">
+    <table class="table_base">
+        <colgroup>
+            <col style="width:80px;" />
+        </colgroup>
+        <tbody>
+            
+                        <tr>
+                            <th>客户组名称</th>
+                            <td>
+                                <input name="GroupName" value="@obj.GroupName" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>状态</th>
+                            <td>
+                                <select name="Status" class="easyui-combobox" data-options="width:200,value:'@obj.Status',required:true">
+                                    <option value="0">非默认</option>
+                                    <option value="1">默认</option>
+                                </select>
+
+
+                            </td>
+                        </tr>
+        </tbody>
+    </table>
+</form>
+
+@section foottoolbar{
+    <a id="saveForm" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+}
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var theEntity = @objStr;
+
+    $(function () {
+        $('#saveForm').click(function () {
+            if (!$('#dataForm').form('enableValidation').form('validate'))
+                return;
+
+            var formValues = $('#dataForm').getValues();
+            $.extend(theEntity, formValues);
+            $.postJSON(rootUrl + 'Crm/Crm_CusGroup/SaveData', theEntity, function (resJson) {
+                if (resJson.Success) {
+                    parent.dialogMsg('保存成功!');
+                    parent.$('#dataTable').datagrid('clearChecked').datagrid('reload');
+                    parent.dialogClose('form');
+                }
+                else {
+                    dialogError(resJson.Msg);
+                }
+            });
+        });
+    });
+</script>

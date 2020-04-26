@@ -1,0 +1,138 @@
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+}
+
+@section toolbar{
+    <a id="add" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>
+    <a id="edit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</a>
+    <a id="delete" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+}
+
+@section search{
+    <div class="search_wrapper">
+        <div class="search_item">
+            <label class="search_label">查询类别</label>
+            <select name="condition" class="easyui-combobox" data-options="width:100">
+                <option value="">请选择</option>
+                
+                <option value="No">客户编号</option>
+                <option value="Name">用户名</option>
+                <option value="Phone">绑定手机号</option>
+                <option value="PayPwd">支付密码</option>
+                <option value="NickName">微信昵称</option>
+            </select>
+            <input name="keyword" class="easyui-textbox" style="width:150px" />
+        </div>
+        <div class="search_submit">
+            <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchGrid(this,'#dataTable')">查询</a>
+        </div>
+    </div>
+}
+<div id="dataTable">
+
+</div>
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var formWidth = 500;
+    var formHeight = 690;
+
+    function initTable() {
+        $('#dataTable').datagrid({
+            url: rootUrl + 'Crm/Crm_Customer/GetDataList',
+            method: 'POST',
+            //queryParams: { 'id': id },
+            idField: 'CustomerId',
+            fit: true,
+            fitColumns: true,
+            singleSelect: false,
+            selectOnCheck: false,
+            checkOnSelect: false,
+            sortName: 'CustomerId',
+            sortOrder: 'Desc',
+            rownumbers: true,
+            pagination: true,
+            pageSize: 30,
+            //nowrap: false,
+            pageList: [10, 30, 50, 100, 200, 500, 1000],
+            //showFooter: true,
+            columns: [[
+                { title: 'ck', field: 'ck', checkbox: true },
+                
+                { title: '客户编号', field: 'No', width: 200 },
+                { title: '用户名', field: 'Name', width: 200 },
+                { title: '绑定手机号', field: 'Phone', width: 200 },
+                { title: '余额', field: 'Balance', width: 200 },
+                { title: '用户类型', field: 'UserTypeValue', width: 200 },
+                { title: '状态', field: 'StatusValue', width: 200 },
+                { title: '微信昵称', field: 'NickName', width: 200 },
+                { title: '微信头像', field: 'Headimgurl', width: 200 },
+                { title: '创建时间', field: 'CreateTime', width: 200 },
+            ]],
+            onBeforeLoad: function (param) {
+
+            },
+            onBeforeSelect: function () {
+                return false;
+            }
+        });
+    }
+
+    $(function () {
+        initTable();
+
+        //添加数据
+        $('#add').click(function () {
+            dialogOpen({
+                id: 'form',
+                title: '添加数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Crm/Crm_Customer/Form',
+            });
+        });
+
+        //修改数据
+        $('#edit').click(function () {
+            var selected = $("#dataTable").datagrid("getChecked");
+            if (!selected || !selected.length) {
+                dialogError('请选择要修改的记录!');
+                return;
+            }
+            var id = selected[0].CustomerId;
+
+            dialogOpen({
+                id: 'form',
+                title: '修改数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Crm/Crm_Customer/Form?id=' + id,
+            });
+        });
+
+        //删除数据
+        $('#delete').click(function () {
+            var checked = $("#dataTable").datagrid("getChecked");
+            if (!checked || !checked.length) {
+                dialogError('请选择要删除的记录!');
+                return;
+            }
+            var ids = $.map(checked, function (item) {
+                return item['CustomerId'];
+            });
+
+            dialogComfirm('确认删除吗？', function () {
+                $.postJSON(rootUrl + 'Crm/Crm_Customer/DeleteData', { ids: JSON.stringify(ids) }, function (resJson) {
+                    if (resJson.Success) {
+                        $('#dataTable').datagrid('clearSelections').datagrid('clearChecked');
+                        $('#dataTable').datagrid('reload');
+                        dialogMsg('删除成功!');
+                    }
+                    else {
+                        dialogError(resJson.Msg);
+                    }
+                });
+            });
+        });
+    });
+</script>

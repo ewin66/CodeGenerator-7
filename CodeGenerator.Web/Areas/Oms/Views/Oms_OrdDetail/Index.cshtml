@@ -1,0 +1,150 @@
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+}
+
+@section toolbar{
+    <a id="add" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>
+    <a id="edit" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</a>
+    <a id="delete" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+}
+
+@section search{
+    <div class="search_wrapper">
+        <div class="search_item">
+            <label class="search_label">查询类别</label>
+            <select name="condition" class="easyui-combobox" data-options="width:100">
+                <option value="">请选择</option>
+                <option value="OrderNo">订单号</option>
+                <option value="ContactName">收货人姓名</option>
+                <option value="ContactPhone">收货电话</option>
+                <option value="ContactAddress">收货地址</option>
+                <option value="OrdDetailNo">订单明细号</option>
+                <option value="ProductNo">产品编号</option>
+                <option value="ProductName">产品名称</option>
+                <option value="Specification">规格</option>
+                <option value="Note">备注</option>
+            </select>
+            <input name="keyword" class="easyui-textbox" style="width:150px" />
+        </div>
+        <div class="search_submit">
+            <a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchGrid(this,'#dataTable')">查询</a>
+        </div>
+    </div>
+}
+<div id="dataTable">
+
+</div>
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var formWidth = 500;
+    var formHeight = 690;
+
+    function initTable() {
+        $('#dataTable').datagrid({
+            url: rootUrl + 'Oms/Oms_OrdDetail/GetDataList',
+            method: 'POST',
+            //queryParams: { 'id': id },
+            idField: 'OrdDetailId',
+            fit: true,
+            fitColumns: true,
+            singleSelect: false,
+            selectOnCheck: false,
+            checkOnSelect: false,
+            sortName: 'OrdDetailId',
+            sortOrder: 'Desc',
+            rownumbers: true,
+            pagination: true,
+            pageSize: 30,
+            //nowrap: false,
+            pageList: [10, 30, 50, 100, 200, 500, 1000],
+            //showFooter: true,
+            columns: [[
+                { title: 'ck', field: 'ck', checkbox: true },
+                
+                { title: '订单号', field: 'OrderNo', width: 200 },
+                { title: '订单明细号', field: 'OrdDetailNo', width: 200 },
+                { title: '收货人姓名', field: 'ContactName', width: 200 },
+                { title: '收货电话', field: 'ContactPhone', width: 200 },
+                { title: '收货地址', field: 'ContactAddress', width: 200 },
+                { title: '产品编号', field: 'ProductNo', width: 200 },
+                { title: '产品名称', field: 'ProductName', width: 200 },
+                { title: '规格', field: 'Specification', width: 200 },
+                { title: '数量', field: 'Num', width: 200 },
+                { title: '单价', field: 'Price', width: 200 },
+                { title: '成本价', field: 'Cost', width: 200 },
+                { title: '总金额', field: 'TotalPrice', width: 200 },
+                { title: '总成本', field: 'TotalCost', width: 200 },
+                { title: '订单来源', field: 'SourceName', width: 200 },
+                { title: '订单状态', field: 'StatusName', width: 200 },
+                { title: '创建时间', field: 'CreateTime', width: 200 },
+                { title: '付款时间', field: 'PayTime', width: 200 },
+                { title: '明细备注', field: 'Note', width: 200 }
+            ]],
+            onBeforeLoad: function (param) {
+
+            },
+            onBeforeSelect: function () {
+                return false;
+            }
+        });
+    }
+
+    $(function () {
+        initTable();
+
+        //添加数据
+        $('#add').click(function () {
+            dialogOpen({
+                id: 'form',
+                title: '添加数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Oms/Oms_OrdDetail/Form',
+            });
+        });
+
+        //修改数据
+        $('#edit').click(function () {
+            var selected = $("#dataTable").datagrid("getChecked");
+            if (!selected || !selected.length) {
+                dialogError('请选择要修改的记录!');
+                return;
+            }
+            var id = selected[0].OrdDetailId;
+
+            dialogOpen({
+                id: 'form',
+                title: '修改数据',
+                width: formWidth,
+                height: formHeight,
+                url: rootUrl + 'Oms/Oms_OrdDetail/Form?id=' + id,
+            });
+        });
+
+        //删除数据
+        $('#delete').click(function () {
+            var checked = $("#dataTable").datagrid("getChecked");
+            if (!checked || !checked.length) {
+                dialogError('请选择要删除的记录!');
+                return;
+            }
+            var ids = $.map(checked, function (item) {
+                return item['OrdDetailId'];
+            });
+
+            dialogComfirm('确认删除吗？', function () {
+                $.postJSON(rootUrl + 'Oms/Oms_OrdDetail/DeleteData', { ids: JSON.stringify(ids) }, function (resJson) {
+                    if (resJson.Success) {
+                        $('#dataTable').datagrid('clearSelections').datagrid('clearChecked');
+                        $('#dataTable').datagrid('reload');
+                        dialogMsg('删除成功!');
+                    }
+                    else {
+                        dialogError(resJson.Msg);
+                    }
+                });
+            });
+        });
+    });
+</script>

@@ -1,0 +1,1003 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CodeGenerator.Entity</name>
+    </assembly>
+    <members>
+        <member name="T:CodeGenerator.Entity.Dto.Base_UserDto">
+            <summary>
+            系统，用户表
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.UserEntities">
+            <summary>
+            系统，用户表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.UserEntities.userId">
+            <summary>
+            用户Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.UserEntities.userName">
+            <summary>
+            用户名称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.UserEntities.userNo">
+            <summary>
+            用户编号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.UserEntities.token">
+            <summary>
+            token
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.UserEntities.loginTime">
+            <summary>
+            登录时间
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto">
+            <summary>
+            Crm_CusGroDetail
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.ProductNo">
+            <summary>
+            产品编号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.ProductName">
+            <summary>
+            产品名称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.CostPrice">
+            <summary>
+            成本价
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.Specification">
+            <summary>
+            单位规格
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.IsDisable">
+            <summary>
+            是否禁用
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.DisableValue">
+            <summary>
+            是否禁用
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroDetailDto.SaleStatusValue">
+            <summary>
+            销售状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Crm_CusGroupDto">
+            <summary>
+            Crm_CusGroup
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroupDto.DeleteValue">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CusGroupDto.StatusName">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Crm_CustomerDto">
+            <summary>
+            Crm_Customer
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CustomerDto.UserTypeValue">
+            <summary>
+            用户类型
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CustomerDto.StatusValue">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Crm_CustomerDto.Token">
+            <summary>
+            Token
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Oms_AddressDto">
+            <summary>
+            Oms_Address
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_AddressDto.DefaultValue">
+            <summary>
+            是否默认
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Oms_OrdDetailDto">
+            <summary>
+            Oms_OrdDetail
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.DeleteValue">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.OrderNo">
+            <summary>
+            订单号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.CustomerId">
+            <summary>
+            客户Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.ContactName">
+            <summary>
+            收货人姓名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.ContactPhone">
+            <summary>
+            收货电话
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.ContactAddress">
+            <summary>
+            收货地址
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.Source">
+            <summary>
+            订单来源
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.SourceName">
+            <summary>
+            订单来源
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.Status">
+            <summary>
+            订单状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.StatusName">
+            <summary>
+            订单状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.CreateId">
+            <summary>
+            创建人Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.PayTime">
+            <summary>
+            付款时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.DeliveryTime">
+            <summary>
+            发货时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrdDetailDto.FinishTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Oms_OrderDto">
+            <summary>
+            Oms_Order
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Oms_OrderDto.DeleteValue">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Dto.Scm_ProductDto">
+            <summary>
+            Scm_Product
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Scm_ProductDto.DisableValue">
+            <summary>
+            是否禁用
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Dto.Scm_ProductDto.Keyword">
+            <summary>
+            关键字
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_AppSecret">
+            <summary>
+            应用密钥
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_AppSecret.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_AppSecret.AppId">
+            <summary>
+            应用Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_AppSecret.AppSecret">
+            <summary>
+            应用密钥
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_AppSecret.AppName">
+            <summary>
+            应用名
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink">
+            <summary>
+            数据库连接
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink.LinkName">
+            <summary>
+            连接名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink.ConnectionStr">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink.DbType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_DatabaseLink.SortNum">
+            <summary>
+            排序编号
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_PermissionAppId">
+            <summary>
+            AppId权限表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionAppId.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionAppId.AppId">
+            <summary>
+            AppId
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionAppId.PermissionValue">
+            <summary>
+            权限值
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_PermissionRole">
+            <summary>
+            角色权限表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionRole.Id">
+            <summary>
+            逻辑主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionRole.RoleId">
+            <summary>
+            角色主键Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionRole.PermissionValue">
+            <summary>
+            权限值
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_PermissionUser">
+            <summary>
+            用户权限表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionUser.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionUser.UserId">
+            <summary>
+            用户主键Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_PermissionUser.PermissionValue">
+            <summary>
+            权限
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_SysLog">
+            <summary>
+            系统日志表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysLog.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysLog.LogType">
+            <summary>
+            日志类型
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysLog.LogContent">
+            <summary>
+            日志内容
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysLog.OpUserName">
+            <summary>
+            操作员用户名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysLog.OpTime">
+            <summary>
+            日志记录时间
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_SysRole">
+            <summary>
+            系统角色
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysRole.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysRole.RoleId">
+            <summary>
+            逻辑主键，角色Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_SysRole.RoleName">
+            <summary>
+            角色名
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_UnitTest">
+            <summary>
+            单元测试表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UnitTest.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UnitTest.UserId">
+            <summary>
+            UserId
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UnitTest.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UnitTest.Age">
+            <summary>
+            Age
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_User">
+            <summary>
+            系统，用户表
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.Id">
+            <summary>
+            代理主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.UserId">
+            <summary>
+            用户Id,逻辑主键
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.RealName">
+            <summary>
+            真实姓名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.Sex">
+            <summary>
+            性别(1为男，0为女)
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_User.Birthday">
+            <summary>
+            出生日期
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Base_SysManage.Base_UserRoleMap">
+            <summary>
+            Base_UserRoleMap
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UserRoleMap.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UserRoleMap.UserId">
+            <summary>
+            UserId
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Base_SysManage.Base_UserRoleMap.RoleId">
+            <summary>
+            RoleId
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Crm.Crm_CusGroDetail">
+            <summary>
+            Crm_CusGroDetail
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.CusGroDetailId">
+            <summary>
+            报价组详情Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.GroupId">
+            <summary>
+            报价组Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.ProductId">
+            <summary>
+            产品Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.Price">
+            <summary>
+            售价
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.SaleStatus">
+            <summary>
+            销售状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.LastModifyTime">
+            <summary>
+            最后修改时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroDetail.LastModifyId">
+            <summary>
+            最后修改Id
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Crm.Crm_CusGroup">
+            <summary>
+            Crm_CusGroup
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.GroupId">
+            <summary>
+            客户组Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.GroupName">
+            <summary>
+            客户组名称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.CreatorId">
+            <summary>
+            创建人
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_CusGroup.IsDelete">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Crm.Crm_Customer">
+            <summary>
+            Crm_Customer
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.CustomerId">
+            <summary>
+            客户Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.No">
+            <summary>
+            客户编号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Name">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Phone">
+            <summary>
+            绑定手机号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.PayPwd">
+            <summary>
+            支付密码
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Balance">
+            <summary>
+            余额
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.UserType">
+            <summary>
+            用户类型
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.OpenId">
+            <summary>
+            微信Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.NickName">
+            <summary>
+            微信昵称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.Headimgurl">
+            <summary>
+            微信头像
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.SalesId">
+            <summary>
+            业务员
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Crm.Crm_Customer.PriceGroupId">
+            <summary>
+            报价组Id
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Oms.Oms_Address">
+            <summary>
+            Oms_Address
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.AddressId">
+            <summary>
+            地址Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.CustomerId">
+            <summary>
+            客户Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Name">
+            <summary>
+            收件人
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Phone">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Province">
+            <summary>
+            省份
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.City">
+            <summary>
+            城市
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Area">
+            <summary>
+            区域
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Street">
+            <summary>
+            街道
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.Site">
+            <summary>
+            地点
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.IsDefault">
+            <summary>
+            是否默认
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Address.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Oms.Oms_OrdDetail">
+            <summary>
+            Oms_OrdDetail
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.OrdDetailId">
+            <summary>
+            订单详情Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.OrdDetailNo">
+            <summary>
+            订单明细号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.OrderId">
+            <summary>
+            订单Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.ProductId">
+            <summary>
+            产品Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.ProductNo">
+            <summary>
+            产品编号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.ProductName">
+            <summary>
+            产品名称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.Specification">
+            <summary>
+            规格
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.PoductParams">
+            <summary>
+            产品参数Json
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.Num">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.Price">
+            <summary>
+            单价
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.Cost">
+            <summary>
+            成本价
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.TotalPrice">
+            <summary>
+            总金额
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.TotalCost">
+            <summary>
+            总成本
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.Note">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_OrdDetail.IsDelete">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Oms.Oms_Order">
+            <summary>
+            Oms_Order
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.OrderId">
+            <summary>
+            订单Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.OrderNo">
+            <summary>
+            订单号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.CustomerId">
+            <summary>
+            客户Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.ContactName">
+            <summary>
+            收货人姓名
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.ContactPhone">
+            <summary>
+            收货电话
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.ContactAddress">
+            <summary>
+            收货地址
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.SumNum">
+            <summary>
+            总数量
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.SumPrice">
+            <summary>
+            总金额
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.TotalCost">
+            <summary>
+            总成本
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.Source">
+            <summary>
+            订单来源
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.Status">
+            <summary>
+            订单状态
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.PayChannel">
+            <summary>
+            付款渠道
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.OuterNo">
+            <summary>
+            外部单号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.CreateId">
+            <summary>
+            创建人Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.PayTime">
+            <summary>
+            付款时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.DeliveryTime">
+            <summary>
+            发货时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.FinishTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Oms.Oms_Order.IsDelete">
+            <summary>
+            是否删除
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Scm.Scm_Product">
+            <summary>
+            Scm_Product
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.ProductId">
+            <summary>
+            产品Id
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.ProductNo">
+            <summary>
+            产品编号
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.ProductName">
+            <summary>
+            产品名称
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.CostPrice">
+            <summary>
+            成本价
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Sort">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Specification">
+            <summary>
+            单位规格
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Brand">
+            <summary>
+            品牌
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Place">
+            <summary>
+            产地
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Weight">
+            <summary>
+            净重
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.Conditions">
+            <summary>
+            存储条件
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.IsDisable">
+            <summary>
+            是否禁用
+            </summary>
+        </member>
+        <member name="P:CodeGenerator.Entity.Scm.Scm_Product.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumCusGroupStatus">
+            <summary>
+            订单状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumGroupDetailStatus">
+            <summary>
+            销售状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumCustomerType">
+            <summary>
+            用户类型
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumCustomerStatus">
+            <summary>
+            用户状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumOrderStatus">
+            <summary>
+            订单状态
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumOrderSource">
+            <summary>
+            订单来源
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumWhether">
+            <summary>
+            是否
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumType">
+            <summary>
+            枚举类型
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumType.LogType">
+            <summary>
+            系统日志类型
+            </summary>
+        </member>
+        <member name="T:CodeGenerator.Entity.Enums.EnumType.RoleType">
+            <summary>
+            系统角色类型
+            </summary>
+        </member>
+    </members>
+</doc>

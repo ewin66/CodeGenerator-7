@@ -1,0 +1,116 @@
+@using CodeGenerator.Entity.Dto;
+@using CodeGenerator.Util;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+
+    var obj = (Crm_CusGroDetailDto)Model;
+    var objStr = Html.Raw(obj.ToJson());
+}
+
+<form id="dataForm" enctype="multipart/form-data" class="easyui-form" method="post" data-options="novalidate:true">
+    <table class="table_base">
+        <colgroup>
+            <col style="width:80px;" />
+        </colgroup>
+        <tbody>
+
+            <tr>
+                <th>商品名称</th>
+                <td>
+                    <input class="easyui-combobox" id="cbxProduct" name="ProductId"
+                           data-options="valueField:'ProductId',textField:'ProductName'">
+                    <input type="hidden" name="GroupId" value="@obj.GroupId">
+
+                </td>
+            </tr>
+            <tr>
+                <th>售价</th>
+                <td>
+                    <input name="Price" value="@obj.Price" class="easyui-textbox" data-options="width:'200px',required:true">
+                </td>
+            </tr>
+            <tr>
+                <th>销售状态</th>
+                <td>
+                    <select name="SaleStatus" class="easyui-combobox" data-options="width:200,value:'@obj.SaleStatus',required:true">
+                        <option value="0">不可售</option>
+                        <option value="1">可售</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+@section foottoolbar{
+    <a id="saveForm" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+}
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var theEntity = @objStr;
+
+     function formatItem(row){
+			var s = '<span style="font-weight:bold">' + row.text + '</span><br/>' +
+					'<span style="color:#888">' + row.desc + '</span>';
+			return s;
+		}
+
+
+    $(function () {
+     
+
+        $('#saveForm').click(function () {
+            if (!$('#dataForm').form('enableValidation').form('validate'))
+                return;
+
+            var formValues = $('#dataForm').getValues();
+            $.extend(theEntity, formValues);
+            $.postJSON(rootUrl + 'Crm/Crm_CusGroDetail/SaveData', theEntity, function (resJson) {
+                if (resJson.Success) {
+                    parent.dialogMsg('保存成功!');
+                    parent.$('#dataTable').datagrid('clearChecked').datagrid('reload');
+                    parent.dialogClose('form');
+                }
+                else {
+                    dialogError(resJson.Msg);
+                }
+            });
+        });
+
+        //绑定模糊查询
+        var selectvalue;
+        $("#cbxProduct").combobox({
+            onChange: function (newVal) {
+                if (selectvalue !== newVal) {
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Content("~/")Scm/Scm_Product/SearchDataList" ,
+                        dataType: "json",
+                        data: {"keyword":newVal },
+                        success: function(ret){
+                            if(ret.Success){
+                                $("#cbxProduct").combobox("loadData", ret.Data);
+                            }else{
+                                parent.dialogMsg('数据加载失败!');
+                                return false;
+                            }
+                        }
+                   });
+                }
+            },
+            onSelect: function (param) {
+                selectvalue = param.ProductId;
+            }
+        });
+
+        if (theEntity.CusGroDetailId !== null) {
+            $("#cbxProduct").combobox({ disabled:true });
+            $('#cbxProduct').combobox('setValue', theEntity.ProductName);
+        } else {
+            $("#cbxProduct").combobox({ disabled: false });
+        }
+
+    });
+</script>

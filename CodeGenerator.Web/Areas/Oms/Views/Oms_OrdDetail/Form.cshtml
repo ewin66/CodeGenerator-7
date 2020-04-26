@@ -1,0 +1,124 @@
+@using CodeGenerator.Entity.Dto;
+@using CodeGenerator.Util;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+
+    var obj = (Oms_OrdDetailDto)Model;
+    var objStr = Html.Raw(obj.ToJson());
+}
+
+<form id="dataForm" enctype="multipart/form-data" class="easyui-form" method="post" data-options="novalidate:true">
+    <table class="table_base">
+        <colgroup>
+            <col style="width:80px;" />
+        </colgroup>
+        <tbody>
+            
+                        <tr>
+                            <th>订单明细号</th>
+                            <td>
+                                <input name="OrdDetailNo" value="@obj.OrdDetailNo" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>产品编号</th>
+                            <td>
+                                <input name="ProductNo" value="@obj.ProductNo" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>产品名称</th>
+                            <td>
+                                <input name="ProductName" value="@obj.ProductName" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>规格</th>
+                            <td>
+                                <input name="Specification" value="@obj.Specification" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>产品参数Json</th>
+                            <td>
+                                <input name="PoductParams" value="@obj.PoductParams" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>数量</th>
+                            <td>
+                                <input name="Num" value="@obj.Num" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>单价</th>
+                            <td>
+                                <input name="Price" value="@obj.Price" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>成本价</th>
+                            <td>
+                                <input name="Cost" value="@obj.Cost" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>总金额</th>
+                            <td>
+                                <input name="TotalPrice" value="@obj.TotalPrice" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>总成本</th>
+                            <td>
+                                <input name="TotalCost" value="@obj.TotalCost" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>备注</th>
+                            <td>
+                                <input name="Note" value="@obj.Note" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>是否删除</th>
+                            <td>
+                                <select name="IsDelete" class="easyui - combobox" data-options="width: 200,value: '@obj.IsDelete',required: true" >
+                                    <option value = "false"> 否 </option>
+                                    <option value = "true"> 是 </option>
+                                </ select >
+                            </td>
+                        </tr>
+        </tbody>
+    </table>
+</form>
+
+@section foottoolbar{
+    <a id="saveForm" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+}
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var theEntity = @objStr;
+
+    $(function () {
+        $('#saveForm').click(function () {
+            if (!$('#dataForm').form('enableValidation').form('validate'))
+                return;
+
+            var formValues = $('#dataForm').getValues();
+            $.extend(theEntity, formValues);
+            $.postJSON(rootUrl + 'Oms/Oms_OrdDetail/SaveData', theEntity, function (resJson) {
+                if (resJson.Success) {
+                    parent.dialogMsg('保存成功!');
+                    parent.$('#dataTable').datagrid('clearChecked').datagrid('reload');
+                    parent.dialogClose('form');
+                }
+                else {
+                    dialogError(resJson.Msg);
+                }
+            });
+        });
+    });
+</script>

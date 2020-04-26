@@ -1,0 +1,85 @@
+@using CodeGenerator.Entity.Dto;
+@using CodeGenerator.Util;
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout_List.cshtml";
+
+    var obj = (Crm_CustomerDto)Model;
+    var objStr = Html.Raw(obj.ToJson());
+}
+
+<form id="dataForm" enctype="multipart/form-data" class="easyui-form" method="post" data-options="novalidate:true">
+    <table class="table_base">
+        <colgroup>
+            <col style="width:80px;" />
+        </colgroup>
+        <tbody>
+                        <tr>
+                            <th>用户名</th>
+                            <td>
+                                <input name="Name" value="@obj.Name" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>绑定手机号</th>
+                            <td>
+                                <input name="Phone" value="@obj.Phone" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>密码</th>
+                            <td>
+                                <input name="Password" value="@obj.Password" class="easyui-textbox" data-options="width:'200px',required:true">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>用户类型</th>
+                            <td>
+                                <select name="UserType" class="easyui-combobox" data-options="width:200,value:'@obj.UserType',required:true">
+                                    <option value="0">客户</option>
+                                    <option value="1">业务员</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>状态</th>
+                            <td>
+                                <select name="Status" class="easyui-combobox" data-options="width:200,value:'@obj.Status',required:true">
+                                    <option value="0">正常</option>
+                                    <option value="1">未审核</option>
+                                    <option value="2">禁用</option>
+                                </select>
+                            </td>
+                        </tr>
+        </tbody>
+    </table>
+</form>
+
+@section foottoolbar{
+    <a id="saveForm" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+}
+
+<script>
+    var rootUrl = '@Url.Content("~/")';
+    var theEntity = @objStr;
+
+    $(function () {
+        $('#saveForm').click(function () {
+            if (!$('#dataForm').form('enableValidation').form('validate'))
+                return;
+
+            var formValues = $('#dataForm').getValues();
+            $.extend(theEntity, formValues);
+            $.postJSON(rootUrl + 'Crm/Crm_Customer/SaveData', theEntity, function (resJson) {
+                if (resJson.Success) {
+                    parent.dialogMsg('保存成功!');
+                    parent.$('#dataTable').datagrid('clearChecked').datagrid('reload');
+                    parent.dialogClose('form');
+                }
+                else {
+                    dialogError(resJson.Msg);
+                }
+            });
+        });
+    });
+</script>

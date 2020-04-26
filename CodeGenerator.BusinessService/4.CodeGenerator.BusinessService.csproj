@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>CodeGenerator.BusinessService</RootNamespace>
+    <AssemblyName>CodeGenerator.BusinessService</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Base_AppSecretBusiness.cs" />
+    <Compile Remove="Base_DatabaseLinkBusiness.cs" />
+    <Compile Remove="Base_SysLogBusiness.cs" />
+    <Compile Remove="Base_SysRoleBusiness.cs" />
+    <Compile Remove="Base_UserService.cs" />
+    <Compile Remove="CheckSignBusiness.cs" />
+    <Compile Remove="HomeBusiness.cs" />
+    <Compile Remove="PermissionManage.cs" />
+    <Compile Remove="RapidDevelopmentBusiness.cs" />
+    <Compile Remove="UrlPermissionManage.cs" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeGenerator.DataRepository\3.CodeGenerator.DataRepository.csproj" />
+    <ProjectReference Include="..\CodeGenerator.Entity\2.CodeGenerator.Entity.csproj" />
+    <ProjectReference Include="..\CodeGenerator.Util\1.CodeGenerator.Util.csproj" />
+  </ItemGroup>
+
+
+</Project>
