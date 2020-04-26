@@ -705,16 +705,16 @@ $@"@using CodeGenerator.Entity.Dto;
         private void BuildSmallEntity(List<TableInfo> tableInfo, string areaName, string tableName, string path)
         {
             string entityPath = _contentRootPath.Replace("OpenAuth.Web", "OpenAuth.Entity");
-            string filePath = Path.Combine(path, "OpenAuth.Domain", "Entitys", $"{tableName}.cs");
+            string filePath = Path.Combine(path, "OpenAuth.Domain", "Entitys", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}.cs");
             string nameSpace = $@"OpenAuth.Domain.Entitys";
 
-            _dbHelper.SaveEntityToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, filePath, nameSpace);
+            _dbHelper.SaveSmallEntityToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, filePath, nameSpace);
 
 
             string dtoPath = _contentRootPath.Replace("OpenAuth.Web", "OpenAuth.Entity");
-            string dtofilePath = Path.Combine(path, "OpenAuth.Domain", "Dto", $"{tableName}Dto.cs");
+            string dtofilePath = Path.Combine(path, "OpenAuth.Domain", "Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto.cs");
 
-            _dbHelper.SaveDtoToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, dtofilePath, nameSpace);
+            _dbHelper.SaveSmallDtoToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, dtofilePath, nameSpace);
 
         }
 

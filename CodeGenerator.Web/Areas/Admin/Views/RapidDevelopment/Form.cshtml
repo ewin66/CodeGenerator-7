@@ -11,7 +11,7 @@
             <tr>
                 <th>生成项目</th>
                 <td>
-                    <select name="project" class="easyui-combobox" data-options="width:200,value:'Reedy',required:true">
+                    <select id="project" name="project" class="easyui-combobox" data-options="width:200,value:'Reedy',required:true">
                         <option value="Reedy">Reedy</option>
                         <option value="Small">Small</option>
                     </select>
@@ -55,17 +55,22 @@
 
     $(function () {
         $('#saveForm').click(function () {
+            debugger
             if (!$('#dataForm').form('enableValidation').form('validate'))
                 return;
 
+            var path = $('#path').textbox('getValue');
             var areaName = $('#areaName').textbox('getValue');
+            var project = $('#project').combobox('getValues');
             var buildType = $('#buildType').combobox('getValues');
             loading();
             $.postJSON(rootUrl + 'Admin/RapidDevelopment/BuildCode', {
                 linkId: linkId,
                 areaName: areaName,
                 tables: tables,
-                buildType: JSON.stringify(buildType)
+                path: path,
+                buildType: JSON.stringify(buildType),
+                project:project
             }, function (resJson) {
                 loading(false);
                 if (resJson.Success) {

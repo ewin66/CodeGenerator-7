@@ -29,6 +29,7 @@ namespace CodeGenerator.Util
         {
             { "boolean",typeof(bool)},
             { "bit(1)",typeof(bool)},
+            { "bit",typeof(bool)},
             { "tinyint unsigned",typeof(byte)},
             { "binary",typeof(byte[])},
             { "varbinary",typeof(byte[])},
