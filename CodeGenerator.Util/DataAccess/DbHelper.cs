@@ -451,6 +451,129 @@ namespace CodeGenerator.Entity.Dto
 
         #endregion
 
+
+        #region Wms
+        /// <summary>
+        /// 生成实体文件
+        /// </summary>
+        /// <param name="infos">表字段信息</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableDescription">表描述信息</param>
+        /// <param name="filePath">文件路径（包含文件名）</param>
+        /// <param name="nameSpace">实体命名空间</param>
+        /// <param name="schemaName">架构（模式）名</param>
+        public virtual void SaveWmsEntityToFile(List<TableInfo> infos, string tableName, string tableDescription, string filePath, string nameSpace, string schemaName = null)
+        {
+            string properties = "";
+            string schema = "";
+            if (!schemaName.IsNullOrEmpty())
+                schema = $@", Schema = ""{schemaName}""";
+            infos.ForEach((item, index) =>
+            {
+                if (item.Name != "Id")
+                {
+                    string isKey = item.IsKey ? $@"
+        [Key, Column(Order = {index + 1})]" : "";
+                    Type type = DbTypeStr_To_CsharpType(item.Type);
+                    string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                    string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                    string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>{isKey}
+        public {type.Name}{isNullable} {item.Name} {{ get; set; }}
+";
+                    properties += newPropertyStr;
+                }
+            });
+            string fileStr =
+$@"using System;
+using System.ComponentModel.DataAnnotations.Schema;
+{_extraUsingNamespace}
+namespace {nameSpace}
+{{
+    /// <summary>
+    /// {tableDescription}
+    /// </summary>
+    [Table(""{tableName}""{schema})]
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}: InitEntityId
+    {{
+{properties}
+    }}
+}}";
+            FileHelper.WriteTxt(fileStr, filePath, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 生成实体文件
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableDescription">表描述信息</param>
+        /// <param name="filePath">文件路径（包含文件名）</param>
+        /// <param name="nameSpace">实体命名空间</param>
+        /// <param name="schemaName">架构（模式）名</param>
+        public virtual void SaveWmsDtoToFile(List<TableInfo> infos, string tableName, string tableDescription, string filePath, string nameSpace, string schemaName = null)
+        {
+            StringBuilder properties = new StringBuilder();
+            StringBuilder enumString = new StringBuilder();
+            string schema = "";
+            if (!schemaName.IsNullOrEmpty())
+                schema = $@", Schema = ""{schemaName}""";
+
+            infos.ForEach((item, index) =>
+            {
+                    Type type = DbTypeStr_To_CsharpType(item.Type);
+                    string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                    string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                    string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public {type.Name}{isNullable} {item.Name} {{ get; set; }}
+";
+                    properties.Append(newPropertyStr);
+            });
+
+
+            infos.Where(f => f.Name.StartsWith("Is")).ForEach((item, index) =>
+            {
+                Type type = DbTypeStr_To_CsharpType(item.Type);
+                string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                string newPropertyStr =
+$@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public string {item.Name.Substring(2, item.Name.Length - 2)}Value {{ get; set; }}
+";
+                enumString.Append(newPropertyStr);
+            });
+
+
+
+            string fileStr =
+$@"using System;
+using YdydWms.Entity.Enums;
+
+namespace {nameSpace}
+{{
+    /// <summary>
+    /// {tableDescription}
+    /// </summary>
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto
+    {{
+{properties.ToString()}
+{enumString.ToString()}
+    }}
+}}";
+            FileHelper.WriteTxt(fileStr, filePath, FileMode.Create);
+        }
+
+        #endregion
+
         #endregion
     }
 }

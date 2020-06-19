@@ -93,6 +93,30 @@ namespace CodeGenerator.BusinessService.Base_SysManage
                     //    BuildView(tableFieldInfo, areaName, aTable);
                     //}
                 }
+                else if (project == "Wms")
+                {
+                    //实体层
+                    if (buildTypeList.Exists(x => x.ToLower() == "entity"))
+                    {
+                        BuildWmsEntity(tableFieldInfo, areaName, aTable, path);
+                    }
+                    //业务层
+                    if (buildTypeList.Exists(x => x.ToLower() == "business"))
+                    {
+                        BuildWmsIService(tableFieldInfo, areaName, aTable, path);
+                        BuildWmsService(tableFieldInfo, areaName, aTable, path);
+                    }
+                    //控制器
+                    if (buildTypeList.Exists(x => x.ToLower() == "controller"))
+                    {
+                        BuildWmsController(tableFieldInfo, areaName, aTable, path);
+                    }
+                    ////视图
+                    //if (buildTypeList.Exists(x => x.ToLower() == "view"))
+                    //{
+                    //    BuildView(tableFieldInfo, areaName, aTable);
+                    //}
+                }
                 else
                 {
 
@@ -710,7 +734,6 @@ $@"@using CodeGenerator.Entity.Dto;
 
             _dbHelper.SaveSmallEntityToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, filePath, nameSpace);
 
-
             string dtoPath = _contentRootPath.Replace("OpenAuth.Web", "OpenAuth.Entity");
             string dtofilePath = Path.Combine(path, "OpenAuth.Domain", "Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto.cs");
 
@@ -828,7 +851,7 @@ namespace OpenAuth.WebApi.Controllers.{areaName}
     /// <summary>
     /// {_dbTableInfoDic[entityName].Description}
     /// </summary>
-    [Route(""api /[controller] /[action]"")]
+    [Route(""api/[controller]/[action]"")]
     [ApiExplorerSettings(GroupName = ""v2"")]
     [ApiController]
     public class {tableName}Controller : ControllerBase
@@ -929,6 +952,326 @@ namespace OpenAuth.WebApi.Controllers.{areaName}
     }}
 }}";
             string filePath = Path.Combine(path, "OpenAuth.WebApi", "Controllers", areaName, $"{tableName}Controller.cs");
+            FileHelper.WriteTxt(code, filePath, FileMode.Create);
+        }
+
+
+        #endregion
+
+        #region Wms
+
+        /// <summary>
+        /// 生成实体
+        /// </summary>
+        /// <param name="tableInfo">表字段信息</param>
+        /// <param name="areaName">区域名</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableName">路径</param>
+        private void BuildWmsEntity(List<TableInfo> tableInfo, string areaName, string tableName, string path)
+        {
+            string filePath = Path.Combine(path, "YdydWms.Entity", "Ydyd", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Split('_')[0])}", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}.cs");
+            string nameSpace = $@"YdydWms.Entity";
+
+            _dbHelper.SaveWmsEntityToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, filePath, nameSpace);
+
+            string dtofilePath = Path.Combine(path, "YdydWms.Entity", "Dto",$"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto.cs");
+            nameSpace = $@"YdydWms.Entity.Dto";
+            _dbHelper.SaveWmsDtoToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, dtofilePath, nameSpace);
+
+        }
+
+        /// <summary>
+        /// 生成业务逻辑代码
+        /// </summary>
+        /// <param name="areaName">区域名</param>
+        /// <param name="entityName">实体名</param>
+        private void BuildWmsIService(List<TableInfo> tableFieldInfo, string areaName, string entityName, string path)
+        {
+
+
+
+            var tableName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "");
+
+            string code =
+$@"using YdydWms.Util;
+using YdydWms.Entity.Dto;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace YdydWms.IService
+{{
+    public interface I{tableName}Service
+    {{
+        /// <summary>
+        /// 查询列表
+        /// </summary>
+        /// <param name=""param"">查询参数</param>
+        /// <returns></returns>
+        Task < PageResult<{tableName}Dto>> GetDataListAsync(PageInput<{tableName}Dto> param);
+        /// <summary>
+        /// 查询详情
+        /// </summary>
+        /// <param name=""id"">主键id</param>
+        /// <returns></returns>
+        Task <{tableName}Dto> GetTheDataAsync(string id);
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name=""param"">新增参数</param>
+        /// <returns></returns>
+        Task AddDataAsync({tableName}Dto param);
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name=""param"">修改参数</param>
+        /// <returns></returns>
+        Task UpdateDataAsync({tableName}Dto param);
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name=""ids"">id数组,JSON数组</param>
+        /// <returns></returns>
+        Task DeleteDataAsync(List<string> ids);
+    }}
+}}";
+            string filePath = Path.Combine(path, "YdydWms.IService", "IService", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Split('_')[0])}", $"I{tableName}Service.cs");
+
+            FileHelper.WriteTxt(code, filePath, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 生成业务逻辑代码
+        /// </summary>
+        /// <param name="areaName">区域名</param>
+        /// <param name="entityName">实体名</param>
+        private void BuildWmsService(List<TableInfo> tableFieldInfo, string areaName, string entityName, string path)
+        {
+
+            string createTimeBusiness = null;
+            StringBuilder boolTypeBusiness = new StringBuilder();
+            string usingEnumBusiness = tableFieldInfo.Any(x => x.Name.StartsWith("Is")) ? $@"using OpenAuth.Domain.Enums;" : null;
+
+            tableFieldInfo.Where(x => x.Name.Equals("CreateTime")).ForEach((aField, index) =>
+            {
+                //创建时间
+                createTimeBusiness = $@"newData.CreateTime = DateTime.Now;";
+            });
+
+            tableFieldInfo.Where(x => x.Name.StartsWith("Is")).ForEach((aField, index) =>
+            {
+                //搜索的下拉选项
+                Type fieldType = _dbHelper.DbTypeStr_To_CsharpType(aField.Type);
+                string newOption = $@"list.ForEach(e => {{ e.{aField.Name.Substring(2, aField.Name.Length - 2)}Value = EnumExtension.GetEnumDescription(((EnumWhether)Enum.ToObject(typeof(EnumWhether), e.{aField.Name}))); }});
+";
+                boolTypeBusiness.Append(newOption);
+            });
+
+            var tableName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "");
+
+            string code =
+$@"using System;
+using LinqKit;
+using System.Linq;
+using YdydWms.Util;
+using YdydWms.Entity;
+using YdydWms.IService;
+using YdydWms.Repository;
+using YdydWms.Entity.Dto;
+using YdydWms.Entity.Enums;
+using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+
+namespace YdydWms.Service
+{{
+    public class {tableName}Service : BaseService<{tableName}>, I{tableName}Service, ITransientDependency
+    {{
+        public {tableName}Service(IRepository repository) : base(repository)
+        {{
+        }}
+
+        #region 外部接口
+        /// <summary>
+        /// 查询列表
+        /// </summary>
+        /// <param name=""param"" > 查询参数</param>
+        /// <returns></returns>
+        public async Task<PageResult<{tableName}Dto>> GetDataListAsync(PageInput<{tableName}Dto> param)
+        {{
+            var query = GetIQueryable();
+            int count = await query.CountAsync();
+            if (count == 0)
+                return new PageResult<{tableName}Dto> {{ Data = null, Total = 0 }};
+
+            var list = await query.OrderBy($@""{{ param.SortField}} {{param.SortType}}"")
+                .Skip((param.PageIndex - 1) * param.PageRows)
+                .Take(param.PageRows)
+                .ToListAsync();
+
+            var result = new PageResult<{tableName}Dto> {{ Data = list.MapToList<{tableName}Dto>(), Total = count }};
+            return result;
+        }}
+
+        /// <summary>
+        /// 查询详细
+        /// </summary>
+        /// <param name=""id"" > 主键Id</param>
+        /// <returns></returns>
+        public async Task<{tableName}Dto> GetTheDataAsync(string id)
+        {{
+            var model = await GetEntityAsync(id);
+            return model.MapTo<{tableName}Dto>();
+        }}
+
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name=""newData"" > 新增参数</param>
+        /// <returns></returns>
+        public async Task AddDataAsync({tableName}Dto newData)
+        {{
+            await InsertAsync(newData.MapTo<{tableName}>());
+        }}
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name=""thisData"" >修改参数</param>
+        /// <returns></returns>
+        public async Task UpdateDataAsync({tableName}Dto thisData)
+        {{
+            await UpdateAsync(thisData.MapTo<{tableName}>());
+        }}
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name=""ids"" > id数组,JSON数组</param>
+        /// <returns></returns>
+        public async Task DeleteDataAsync(List<string> ids)
+        {{
+            await DeleteAsync(ids);
+        }}
+
+        #endregion
+
+        #region 私有成员
+
+        #endregion
+
+        #region 数据模型
+
+        #endregion
+    }}
+}}";
+            string filePath = Path.Combine(path, "YdydWms.Service", "Service", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Split('_')[0])}", $"{tableName}Service.cs");
+
+            FileHelper.WriteTxt(code, filePath, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 生成控制器代码
+        /// </summary>
+        /// <param name="areaName">区域名</param>
+        /// <param name="entityName">实体名</param>
+        private void BuildWmsController(List<TableInfo> tableFieldInfo, string areaName, string entityName, string path)
+        {
+            var tableName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Replace("small_", "")).Replace("_", "");
+            var tableLowerName = tableName.First().ToString().ToLower() + tableName.Substring(1);
+
+            string code =
+$@"using YdydWms.Util;
+using YdydWms.IService;
+using YdydWms.Entity.Dto;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace  YdydWms.Api.Controllers.{areaName}
+{{
+    /// <summary>
+    /// {_dbTableInfoDic[entityName].Description}
+    /// </summary>
+    [Route(""{areaName}/[controller]/[action]"")]
+    [ApiExplorerSettings(GroupName = ""v2"")]
+    [ApiController]
+    public class {tableName}Controller : BaseApiController
+    {{
+        #region DI
+        /// <summary>
+        /// 构造函数注入
+        /// </summary>
+        /// <param name=""{tableLowerName}Service"" ></param>
+        public {tableName}Controller(I{tableName}Service {tableLowerName}Service)
+        {{ 
+            _{tableLowerName}Service = {tableLowerName}Service;
+        }}
+        I{tableName}Service _{tableLowerName}Service {{ get; }}
+        #endregion
+
+         #region 获取
+
+        /// <summary>
+        /// 查询列表
+        /// </summary>
+        /// <param name=""param"" >查询参数</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<AjaxResult<List<{tableName}Dto>>> GetDataList(PageInput<{tableName}Dto> param)
+        {{
+            return await _{tableLowerName}Service.GetDataListAsync(param);
+        }}
+
+        /// <summary>
+        /// 查询详情
+        /// </summary>
+        /// <param name=""param"" >查询参数</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<{tableName}Dto> GetTheData(IdInputDto param)
+        {{
+            return await _{tableLowerName}Service.GetTheDataAsync(param.id) ?? new {tableName}Dto();
+        }}
+
+        #endregion
+
+        #region 提交
+
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name=""param"" >新增参数</param>
+        [HttpPost]
+        public async Task SaveData({tableName}Dto param)
+        {{
+            await _{tableLowerName}Service.AddDataAsync(param);
+        }}
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name=""param"" >修改参数</param>
+        [HttpPost]
+        public async Task ModifyData({tableName}Dto param)
+        {{
+            await _{tableLowerName}Service.UpdateDataAsync(param);
+        }}
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        /// <param name=""ids"" >id数组,JSON数组</param>
+        [HttpPost]
+        public async Task DeleteData(List<string> ids)
+        {{
+            await _{tableLowerName}Service.DeleteDataAsync(ids);
+        }}
+
+        #endregion
+    }}
+}}";
+            string filePath = Path.Combine(path, "YdydWms.Api", "Controllers", areaName, $"{tableName}Controller.cs");
             FileHelper.WriteTxt(code, filePath, FileMode.Create);
         }
 
