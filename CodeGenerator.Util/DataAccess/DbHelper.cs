@@ -523,6 +523,8 @@ namespace {nameSpace}
 
             infos.ForEach((item, index) =>
             {
+                if (item.Name != "Id")
+                {
                     Type type = DbTypeStr_To_CsharpType(item.Type);
                     string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
                     string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
@@ -534,8 +536,8 @@ namespace {nameSpace}
         public {type.Name}{isNullable} {item.Name} {{ get; set; }}
 ";
                     properties.Append(newPropertyStr);
+                }
             });
-
 
             infos.Where(f => f.Name.StartsWith("Is")).ForEach((item, index) =>
             {
@@ -563,7 +565,7 @@ namespace {nameSpace}
     /// <summary>
     /// {tableDescription}
     /// </summary>
-    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto: InitEntityId
     {{
 {properties.ToString()}
 {enumString.ToString()}

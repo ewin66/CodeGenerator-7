@@ -111,11 +111,11 @@ namespace CodeGenerator.BusinessService.Base_SysManage
                     {
                         BuildWmsController(tableFieldInfo, areaName, aTable, path);
                     }
-                    ////视图
-                    //if (buildTypeList.Exists(x => x.ToLower() == "view"))
-                    //{
-                    //    BuildView(tableFieldInfo, areaName, aTable);
-                    //}
+                    //视图
+                    if (buildTypeList.Exists(x => x.ToLower() == "view"))
+                    {
+                        BuildWmsView(tableFieldInfo, areaName, aTable, path);
+                    }
                 }
                 else
                 {
@@ -1007,7 +1007,7 @@ namespace YdydWms.IService
         /// </summary>
         /// <param name=""param"">查询参数</param>
         /// <returns></returns>
-        Task < PageResult<{tableName}Dto>> GetDataListAsync(PageInput<{tableName}Dto> param);
+        Task <PageResult<{tableName}Dto>> GetDataListAsync(PageInput param);
         /// <summary>
         /// 查询详情
         /// </summary>
@@ -1097,13 +1097,20 @@ namespace YdydWms.Service
         /// </summary>
         /// <param name=""param"" > 查询参数</param>
         /// <returns></returns>
-        public async Task<PageResult<{tableName}Dto>> GetDataListAsync(PageInput<{tableName}Dto> param)
+        public async Task<PageResult<{tableName}Dto>> GetDataListAsync(PageInput param)
         {{
             var query = GetIQueryable();
+
+            //搜索
+            if(!param.keyQuery.IsNullOrEmpty())
+            query = QueryableExtensions.ExtKeyQuery(query, param.keyQuery);
+
+            //获取总条数
             int count = await query.CountAsync();
             if (count == 0)
                 return new PageResult<{tableName}Dto> {{ Data = null, Total = 0 }};
 
+            //排序分页
             var list = await query.OrderBy($@""{{ param.SortField}} {{param.SortType}}"")
                 .Skip((param.PageIndex - 1) * param.PageRows)
                 .Take(param.PageRows)
@@ -1275,6 +1282,357 @@ namespace  YdydWms.Api.Controllers.{areaName}
             FileHelper.WriteTxt(code, filePath, FileMode.Create);
         }
 
+
+        /// <summary>
+        /// 生成视图
+        /// </summary>
+        /// <param name="tableInfoList">表字段信息</param>
+        /// <param name="areaName">区域名</param>
+        /// <param name="entityName">实体名</param>
+        private void BuildWmsView(List<TableInfo> tableInfoList, string areaName, string entityName, string path)
+        {
+            //生成Index页面
+            StringBuilder searchConditionSelectHtml = new StringBuilder();
+            StringBuilder tableColsBuilder = new StringBuilder();
+            StringBuilder formRowBuilder = new StringBuilder();
+
+            tableInfoList.Where(x => !x.Name.EndsWith("Id")).ForEach((aField, index) =>
+            {
+                //搜索的下拉选项
+                Type fieldType = _dbHelper.DbTypeStr_To_CsharpType(aField.Type);
+                if (fieldType == typeof(string))
+                {
+                    string newOption = $@"
+                <option value=""{aField.Name}"">{aField.Description}</option>";
+                    searchConditionSelectHtml.Append(newOption);
+                }
+
+                //数据表格列
+                string end = (index == tableInfoList.Count - 2) ? "" : ",";
+                string newCol = "";
+                if (!aField.Name.StartsWith("Is"))
+                {
+                    newCol = $@"
+  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1) }', sorter: true, width: 200 }}{end}";
+                }
+                else if (aField.Name != "IsDeleted")
+                {
+                    newCol = $@"
+  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + aField.Name.Substring(2, aField.Name.Length - 2).Substring(1)}Value', width: 120 }}{end}";
+                }
+                if(!newCol.IsNullOrEmpty())
+                    tableColsBuilder.Append(newCol);
+            });
+
+            tableInfoList.Where(x => !x.Name.EndsWith("Id") && !x.Name.EndsWith("Time")).ForEach((aField, index) =>
+            {
+                //Form页面中的Html
+                string newFormRow = "";
+                if (aField.Name != "IsDeleted")
+                {
+                    newFormRow = $@"
+        <a-form-model-item label=""{aField.Description}"" prop=""{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1)}"">
+          <a-input v-model=""entity.{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1)}"" autocomplete=""off"" />
+        </a-form-model-item>";
+                }
+                if (!newFormRow.IsNullOrEmpty())
+                    formRowBuilder.Append(newFormRow);
+            });
+
+            string indexHtml =
+$@"<template>
+  <a-card :bordered=""false"" >
+    <div class=""table-page-search-wrapper"" >
+      <a-form layout= ""inline"" >
+        <a-row :gutter=""48"" >
+          <select-tool :options=""queryItem"" :queryData=""pagination.keyQuery""></select-tool>
+          <a-col :md=""6"" :sm=""24"" style=""float:right"">
+            <span class=""table-page-search-submitButtons"">
+              <a-button
+                type= ""primary""
+                icon=""search""
+                @click=""() => {{this.pagination.current = 1; this.getDataList()}}""
+              >查询</a-button>
+              <a-button style= ""margin-left: 8px"" type=""primary"" icon=""plus"" @click=""hanldleAdd()"">新建</a-button>
+              <a-button
+                style= ""margin-left: 8px""
+                type=""primary""
+                icon=""plus""
+                @click=""handleEdit(selectedRowKeys)""
+              >编辑</a-button>
+              <a-button
+                style= ""margin-left: 8px""
+                type=""danger""
+                icon=""minus""
+                @click=""handleDelete(selectedRowKeys)""
+                :disabled=""!hasSelected()""
+                :loading=""loading""
+              >删除</a-button>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+    </div>
+
+    <a-table
+      ref=""table""
+      :columns=""columns""
+      :scroll=""{{ x: 1500, y: 300 }}""
+      :rowKey=""row => row.id""
+      :dataSource=""data""
+      :pagination=""pagination""
+      :loading=""loading""
+      @change=""handleTableChange""
+      :customRow=""onSelectRow""
+      :rowSelection=""{{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange}}""
+      :bordered=""true""
+      size=""small""
+    >
+      <span slot= ""action"" slot-scope=""text, record"">
+        <template>
+          <a @click = ""handleEdit(record.id)"" > 编辑 </a >
+          <a-divider type=""vertical"" />
+          <a @click = ""handleDelete([record.id])"" > 删除 </a >
+        </template >
+      </span >
+    </a-table >
+
+    <edit-form ref=""editForm"" :afterSubmit=""getDataList""></edit-form>
+  </a-card>
+</template>
+
+<script>
+import EditForm from './EditForm'
+import SelectTool from '@/components/SelectTool'
+
+const columns = [{tableColsBuilder}
+]
+
+export default {{
+  components: {{
+    EditForm,
+    SelectTool
+  }},
+  mounted () {{
+    this.getDataList()
+  }},
+  data () {{
+    return {{
+      // 查询相关
+      // 分页
+      pagination: {{
+        current: 1,
+        pageSize: 10,
+        keyQuery: [
+          // {{
+          //   condition: 'Name',
+          //   keyword: '',
+          //   symbol: '',
+          //   type: 'string',
+          //   isCandel: false
+          // }},
+          // {{
+          //   condition: 'State',
+          //   keyword: '',
+          //   symbol: '=',
+          //   type: 'enum',
+          //   isCandel: false
+          // }}
+        ],
+        showTotal: (total, range) => `总数:${{ total}}  当前:${{ range[0]}} - ${{ range[1]}}`
+      }},
+      // 查询项
+      queryItem: [
+        // {{
+        //  value: 'Name',
+        //  label: '名称',
+        //  type: 'string'
+        // }},
+        // {{
+        //   value: 'State',
+        //   label: '状态',
+        //   type: 'enum',
+        //   enum: 'EnumStatus',
+        //   selectListItem: []
+        // }}
+      ],
+      data: [],
+      filters: {{}},
+      sorter: {{ field: 'id', order: 'asc' }},
+      loading: false,
+      columns,
+      visible: false,
+      selectedRowKeys: []
+    }}
+  }},
+  methods: {{
+    handleTableChange (pagination, filters, sorter) {{
+      this.pagination = {{ ...pagination }}
+      this.filters = {{ ...filters }}
+      this.sorter = {{ ...sorter }}
+      this.getDataList()
+    }},
+    getDataList () {{
+      this.selectedRowKeys = []
+      this.loading = true
+      this.$http.post('/{areaName}/{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "")}/GetDataList', {{
+        PageIndex: this.pagination.current,
+        PageRows: this.pagination.pageSize,
+        keyQuery: this.pagination.keyQuery,
+        SortField: this.sorter.field || 'id',
+        SortType: this.sorter.order === 'ascend' ? 'asc' : 'desc',
+        ...this.filters
+      }}).then(resJson => {{
+        this.loading = false
+        this.data = resJson.data
+        const pagination = {{ ...this.pagination }}
+        pagination.total = resJson.total
+        this.pagination = pagination
+      }})
+    }},
+    onSelectChange (selectedRowKeys) {{
+      this.selectedRowKeys = selectedRowKeys
+      console.log(selectedRowKeys)
+    }},
+    onSelectRow(record, index) {{
+      return {{
+      on:
+        {{
+          click: () => {{
+            this.selectedRowKeys = [record.id]
+          }}
+        }}
+      }}
+    }},
+    hasSelected () {{
+      return this.selectedRowKeys.length > 0
+    }},
+    hanldleAdd () {{
+      this.$refs.editForm.openForm()
+    }},
+    handleEdit (selectedRowKeys) {{
+      if (this.selectedRowKeys.length === 1) this.$refs.editForm.openForm(selectedRowKeys[0])
+      else this.$message.error('请选择一个进行编辑!')
+    }},
+    handleDelete(ids) {{
+      var thisObj = this
+      this.$confirm({{
+        title: '确认删除吗?',
+        onOk () {{
+          return new Promise((resolve, reject) => {{
+            thisObj.submitDelete(ids, resolve, reject)
+          }}).catch (() => console.log('Oops errors!'))
+        }}
+      }})
+    }},
+    submitDelete (ids, resolve, reject) {{
+      this.$http.post('/{areaName}/{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "")}/DeleteData', ids).then(resJson => {{
+        resolve()
+        if (resJson.success)
+        {{
+          this.$message.success('操作成功!')
+          this.getDataList()
+        }}
+        else
+        {{
+          this.$message.error(resJson.msg)
+        }}
+      }})
+    }}
+  }}
+}}
+</script>
+";
+            string indexPath = Path.Combine(path, "YdydWeb", "src", "views", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Split('_')[0])}", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.PadLeft(entityName.IndexOf("_")).Remove(0, entityName.IndexOf("_"))).Replace("_", "")}", "List.vue");
+
+            FileHelper.WriteTxt(indexHtml, indexPath, FileMode.Create);
+
+            //生成Form页面
+            string formHtml =
+$@"<template>
+  <a-modal
+    title=""编辑表单""
+    width=""40%""
+    :visible=""visible""
+    :confirmLoading=""confirmLoading""
+    @ok=""handleSubmit""
+    @cancel=""()=>{{this.visible=false}}""
+  >
+    <a-spin :spinning=""confirmLoading"">
+      <a-form-model ref=""form"" :model=""entity"" :rules=""rules"" v-bind=""layout"">{formRowBuilder}
+      </a-form-model>
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+export default {{
+  props: {{
+    afterSubmit: {{
+      type: Function,
+      default: null
+    }}
+  }},
+  data () {{
+    return {{
+      layout: {{
+        labelCol: {{ span: 5 }},
+        wrapperCol: {{ span: 18 }}
+      }},
+      visible: false,
+      confirmLoading: false,
+      entity: {{}},
+      rules: {{
+        // name: [{{ required: true, message: '必填' }}],
+      }}
+    }}
+  }},
+  methods: {{
+    init () {{
+      this.visible = true
+      this.entity = {{}}
+      this.$nextTick(() => {{
+        this.$refs['form'].clearValidate()
+      }})
+    }},
+    openForm (id) {{
+      this.init()
+      if (id) {{
+        this.$http.post('/{areaName}/{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "")}/GetTheData', {{ id: id }}).then(resJson => {{
+          this.entity = resJson.data
+        }})
+      }}
+    }},
+    handleSubmit () {{
+      this.$refs['form'].validate(valid => {{
+        if (!valid) {{
+          return
+        }}
+        this.confirmLoading = true
+        let url = '/{areaName}/{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_","")}/ModifyData'
+        if (this.entity.id == null) {{
+          url = '/{areaName}/{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName).Replace("_", "")}/SaveData'
+        }}
+        this.$http.post(url, this.entity).then(resJson => {{
+          this.confirmLoading = false
+          if (resJson.success) {{
+            this.$message.success('操作成功!')
+            this.afterSubmit()
+            this.visible = false
+          }} else {{
+            this.$message.error(resJson.msg)
+          }}
+        }})
+      }})
+    }}
+  }}
+}}
+</script>
+";
+            string formPath = Path.Combine(path, "YdydWeb", "src", "views", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.Split('_')[0])}", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(entityName.PadLeft(entityName.IndexOf("_")).Remove(0, entityName.IndexOf("_"))).Replace("_","")}", "EditForm.vue");
+
+            FileHelper.WriteTxt(formHtml, formPath, FileMode.Create);
+        }
 
         #endregion
 
