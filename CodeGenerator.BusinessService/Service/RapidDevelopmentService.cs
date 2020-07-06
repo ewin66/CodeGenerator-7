@@ -1217,7 +1217,7 @@ namespace  YdydWms.Api.Controllers.{areaName}
         I{tableName}Service _{tableLowerName}Service {{ get; }}
         #endregion
 
-         #region 获取
+        #region 获取
 
         /// <summary>
         /// 查询列表

@@ -37,6 +37,7 @@ namespace CodeGenerator.Util
             { "longblob",typeof(byte[])},
             { "datetime",typeof(DateTime)},
             { "double",typeof(double)},
+            { "decimal",typeof(Decimal)},
             { "char(36)",typeof(Guid)},
             { "smallint",typeof(Int16)},
             { "int",typeof(Int32)},
