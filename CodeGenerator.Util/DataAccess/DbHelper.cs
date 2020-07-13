@@ -223,7 +223,7 @@ namespace CodeGenerator.Util
         /// </summary>
         /// <param name="tableName">表名</param>
         /// <returns></returns>
-        public abstract List<TableInfo> GetDbTableInfo(string tableName);
+        public abstract List<TableInfo> GetDbTableInfo(string tableName, string linkName);
 
         /// <summary>
         /// 将数据库类型转为对应C#数据类型
@@ -470,7 +470,7 @@ namespace CodeGenerator.Entity.Dto
                 schema = $@", Schema = ""{schemaName}""";
             infos.ForEach((item, index) =>
             {
-                if (item.Name != "Id")
+                if (item.Name != "Id" && item.Name != "id")
                 {
                     string isKey = item.IsKey ? $@"
         [Key, Column(Order = {index + 1})]" : "";
@@ -482,7 +482,8 @@ namespace CodeGenerator.Entity.Dto
         /// <summary>
         /// {description}
         /// </summary>{isKey}
-        public {type.Name}{isNullable} {item.Name} {{ get; set; }}
+        [Column(""{item.Name}"")]
+        public {type.Name}{isNullable} {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")} {{ get; set; }}
 ";
                     properties += newPropertyStr;
                 }
@@ -497,7 +498,7 @@ namespace {nameSpace}
     /// {tableDescription}
     /// </summary>
     [Table(""{tableName}""{schema})]
-    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}: InitEntityId
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}: InitEntityId
     {{
 {properties}
     }}
@@ -523,7 +524,7 @@ namespace {nameSpace}
 
             infos.ForEach((item, index) =>
             {
-                if (item.Name != "Id")
+                if (item.Name != "Id" && item.Name != "id")
                 {
                     Type type = DbTypeStr_To_CsharpType(item.Type);
                     string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
@@ -533,23 +534,38 @@ namespace {nameSpace}
         /// <summary>
         /// {description}
         /// </summary>
-        public {type.Name}{isNullable} {item.Name} {{ get; set; }}
+        public {type.Name}{isNullable} {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")} {{ get; set; }}
 ";
                     properties.Append(newPropertyStr);
                 }
             });
 
-            infos.Where(f => f.Name.StartsWith("Is")).ForEach((item, index) =>
+            infos.Where(f => f.Name.StartsWith("Is") || f.Name.StartsWith("is_")).ForEach((item, index) =>
             {
                 Type type = DbTypeStr_To_CsharpType(item.Type);
                 string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
                 string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
                 string newPropertyStr =
-$@"
+    $@"
         /// <summary>
         /// {description}
         /// </summary>
-        public string {item.Name.Substring(2, item.Name.Length - 2)}Value {{ get; set; }}
+        public string {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "").Substring(2, System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "").Length - 2)}Value {{ get; set; }}
+";
+                enumString.Append(newPropertyStr);
+            });
+
+            infos.Where(f => f.Name == "Type" || f.Name == "State" || f.Name == "type" || f.Name == "state").ForEach((item, index) =>
+            {
+                Type type = DbTypeStr_To_CsharpType(item.Type);
+                string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public string {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")}Value {{ get; set; }}
 ";
                 enumString.Append(newPropertyStr);
             });
@@ -565,7 +581,7 @@ namespace {nameSpace}
     /// <summary>
     /// {tableDescription}
     /// </summary>
-    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName.Replace("small_", "")).Replace("_", "")}Dto: InitEntityId
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto: InitEntityId
     {{
 {properties.ToString()}
 {enumString.ToString()}

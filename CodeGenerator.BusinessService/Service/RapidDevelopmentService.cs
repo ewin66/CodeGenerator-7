@@ -58,7 +58,7 @@ namespace CodeGenerator.BusinessService.Base_SysManage
         public void BuildCode(string linkId, string areaName, string tables, string buildType, string project, string path)
         {
             //内部成员初始化
-            _dbHelper = GetTheDbHelper(linkId);
+            _dbHelper = GetTheDbHelper(linkId,out string linkName);
             GetDbTableList(linkId).ForEach(aTable =>
             {
                 _dbTableInfoDic.Add(aTable.TableName, aTable);
@@ -68,7 +68,7 @@ namespace CodeGenerator.BusinessService.Base_SysManage
             List<string> buildTypeList = buildType.ToList<string>();
             tableList.ForEach(aTable =>
             {
-                var tableFieldInfo = _dbHelper.GetDbTableInfo(aTable);
+                var tableFieldInfo = _dbHelper.GetDbTableInfo(aTable, linkName);
 
                 if (project == "Small")
                 {
@@ -99,6 +99,11 @@ namespace CodeGenerator.BusinessService.Base_SysManage
                     if (buildTypeList.Exists(x => x.ToLower() == "entity"))
                     {
                         BuildWmsEntity(tableFieldInfo, areaName, aTable, path);
+                    }
+                    //dto层
+                    if (buildTypeList.Exists(x => x.ToLower() == "dto"))
+                    {
+                        BuildWmsDto(tableFieldInfo, areaName, aTable, path);
                     }
                     //业务层
                     if (buildTypeList.Exists(x => x.ToLower() == "business"))
@@ -973,9 +978,19 @@ namespace OpenAuth.WebApi.Controllers.{areaName}
             string nameSpace = $@"YdydWms.Entity";
 
             _dbHelper.SaveWmsEntityToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, filePath, nameSpace);
+        }
 
-            string dtofilePath = Path.Combine(path, "YdydWms.Entity", "Dto",$"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto.cs");
-            nameSpace = $@"YdydWms.Entity.Dto";
+        /// <summary>
+        /// 生成Dto
+        /// </summary>
+        /// <param name="tableInfo">表字段信息</param>
+        /// <param name="areaName">区域名</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableName">路径</param>
+        private void BuildWmsDto(List<TableInfo> tableInfo, string areaName, string tableName, string path)
+        {
+            string dtofilePath = Path.Combine(path, "YdydWms.Entity", "Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto", $"{System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto.cs");
+            string nameSpace = $@"YdydWms.Entity.Dto";
             _dbHelper.SaveWmsDtoToFile(tableInfo, tableName, _dbTableInfoDic[tableName].Description, dtofilePath, nameSpace);
 
         }
@@ -1049,7 +1064,7 @@ namespace YdydWms.IService
 
             string createTimeBusiness = null;
             StringBuilder boolTypeBusiness = new StringBuilder();
-            string usingEnumBusiness = tableFieldInfo.Any(x => x.Name.StartsWith("Is")) ? $@"using OpenAuth.Domain.Enums;" : null;
+            string usingEnumBusiness = tableFieldInfo.Any(x => x.Name.StartsWith("Is")) ? $@"using YdydWms.Entity.Enums;" : null;
 
             tableFieldInfo.Where(x => x.Name.Equals("CreateTime")).ForEach((aField, index) =>
             {
@@ -1296,7 +1311,7 @@ namespace  YdydWms.Api.Controllers.{areaName}
             StringBuilder tableColsBuilder = new StringBuilder();
             StringBuilder formRowBuilder = new StringBuilder();
 
-            tableInfoList.Where(x => !x.Name.EndsWith("Id")).ForEach((aField, index) =>
+            tableInfoList.Where(x => !x.Name.EndsWith("Id") && !x.Name.EndsWith("id")).ForEach((aField, index) =>
             {
                 //搜索的下拉选项
                 Type fieldType = _dbHelper.DbTypeStr_To_CsharpType(aField.Type);
@@ -1310,29 +1325,34 @@ namespace  YdydWms.Api.Controllers.{areaName}
                 //数据表格列
                 string end = (index == tableInfoList.Count - 2) ? "" : ",";
                 string newCol = "";
-                if (!aField.Name.StartsWith("Is"))
+                if ((aField.Name != "IsDeleted" && aField.Name != "is_deleted") && (aField.Name.StartsWith("Is") || aField.Name.StartsWith("is_")))
                 {
                     newCol = $@"
-  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1) }', sorter: true, width: 200 }}{end}";
+  {{ title: '{aField.Description}', dataIndex: '{aField.Name.Replace("_", "").Substring(2).First().ToString().ToLower() + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aField.Name).Replace("_", "").Substring(2, System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aField.Name).Replace("_", "").Length - 2).Substring(1)}Value', width: 120 }}{end}";
                 }
-                else if (aField.Name != "IsDeleted")
+                else if((aField.Name != "IsDeleted" && aField.Name != "is_deleted") && (aField.Name == "Type" || aField.Name == "State" || aField.Name == "type" || aField.Name == "state"))
                 {
                     newCol = $@"
-  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + aField.Name.Substring(2, aField.Name.Length - 2).Substring(1)}Value', width: 120 }}{end}";
+  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1)}Value', width: 120 }}{end}";
                 }
-                if(!newCol.IsNullOrEmpty())
+                else if (aField.Name != "IsDeleted" && aField.Name != "is_deleted")
+                {
+                    newCol = $@"
+  {{ title: '{aField.Description}', dataIndex: '{aField.Name.First().ToString().ToLower() + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aField.Name).Replace("_", "").Substring(1) }', sorter: true, width: 200 }}{end}";
+                }
+                if (!newCol.IsNullOrEmpty())
                     tableColsBuilder.Append(newCol);
             });
 
-            tableInfoList.Where(x => !x.Name.EndsWith("Id") && !x.Name.EndsWith("Time")).ForEach((aField, index) =>
+            tableInfoList.Where(x => !x.Name.EndsWith("Id") && !x.Name.EndsWith("id") && !x.Name.EndsWith("Time") && !x.Name.EndsWith("time")).ForEach((aField, index) =>
             {
                 //Form页面中的Html
                 string newFormRow = "";
-                if (aField.Name != "IsDeleted")
+                if (aField.Name != "IsDeleted" && aField.Name != "is_deleted")
                 {
                     newFormRow = $@"
-        <a-form-model-item label=""{aField.Description}"" prop=""{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1)}"">
-          <a-input v-model=""entity.{aField.Name.First().ToString().ToLower() + aField.Name.Substring(1)}"" autocomplete=""off"" />
+        <a-form-model-item label=""{aField.Description}"" prop=""{aField.Name.First().ToString().ToLower() + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aField.Name).Replace("_", "").Substring(1)}"">
+          <a-input v-model=""entity.{aField.Name.First().ToString().ToLower() + System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(aField.Name).Replace("_", "").Substring(1)}"" autocomplete=""off"" />
         </a-form-model-item>";
                 }
                 if (!newFormRow.IsNullOrEmpty())
@@ -1643,11 +1663,23 @@ export default {{
         /// </summary>
         /// <param name="linkId">数据库连接Id</param>
         /// <returns></returns>
+        private DbHelper GetTheDbHelper(string linkId, out string linkName)
+        {
+            var theLink = GetTheLink(linkId);
+            DbHelper dbHelper = DbHelperFactory.GetDbHelper(theLink.DbType, theLink.ConnectionStr);
+            linkName = theLink.LinkName;
+            return dbHelper;
+        }
+
+        /// <summary>
+        /// 获取对应的数据库帮助类
+        /// </summary>
+        /// <param name="linkId">数据库连接Id</param>
+        /// <returns></returns>
         private DbHelper GetTheDbHelper(string linkId)
         {
             var theLink = GetTheLink(linkId);
             DbHelper dbHelper = DbHelperFactory.GetDbHelper(theLink.DbType, theLink.ConnectionStr);
-
             return dbHelper;
         }
 

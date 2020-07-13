@@ -36,6 +36,7 @@ namespace CodeGenerator.Util
             { "blob",typeof(byte[])},
             { "longblob",typeof(byte[])},
             { "datetime",typeof(DateTime)},
+            { "date",typeof(DateTime)},
             { "double",typeof(double)},
             { "decimal",typeof(Decimal)},
             { "char(36)",typeof(Guid)},
@@ -75,12 +76,13 @@ WHERE TABLE_SCHEMA = @dbName";
             return GetListBySql<DbTableInfo>(sql, new List<DbParameter> { new MySqlParameter("@dbName", dbName) });
         }
 
+
         /// <summary>
         /// 通过连接字符串和表名获取数据库表的信息
         /// </summary>
         /// <param name="tableName">表名</param>
         /// <returns></returns>
-        public override List<TableInfo> GetDbTableInfo(string tableName)
+        public override List<TableInfo> GetDbTableInfo(string tableName, string linkName)
         {
             string sql = @"select DISTINCT
 	a.COLUMN_NAME as Name,
@@ -89,9 +91,9 @@ WHERE TABLE_SCHEMA = @dbName";
 	(a.IS_NULLABLE = 'YES') as IsNullable,
 	a.COLUMN_COMMENT as Description
 from information_schema.columns a 
-where table_name=@tableName
+where table_name=@tableName and  table_schema = @linkName
 ORDER BY a.ORDINAL_POSITION";
-            return GetListBySql<TableInfo>(sql, new List<DbParameter> { new MySqlParameter("@tableName", tableName) });
+            return GetListBySql<TableInfo>(sql, new List<DbParameter> { new MySqlParameter("@tableName", tableName) , new MySqlParameter("@linkName", linkName) });
         }
 
         /// <summary>

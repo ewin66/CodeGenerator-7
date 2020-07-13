@@ -11,7 +11,7 @@
             <tr>
                 <th>生成项目</th>
                 <td>
-                    <select id="project" name="project" class="easyui-combobox" data-options="width:200,value:'Reedy',required:true">
+                    <select id="project" name="project" class="easyui-combobox" data-options="width:200,value:'',required:true">
                         <option value="Reedy">Reedy</option>
                         <option value="Small">Small</option>
                         <option value="Wms">Wms</option>
@@ -21,8 +21,9 @@
             <tr>
                 <th>生成选项</th>
                 <td>
-                    <select id="buildType" name="buildType" class="easyui-combobox" data-options="width:200,value:['entity','business','controller','view'],multiple:true">
+                    <select id="buildType" name="buildType" class="easyui-combobox" data-options="width:200,value:['entity','business','controller','view','dto'],multiple:true">
                         <option value="entity">实体层</option>
+                        <option value="dto">Dto层</option>
                         <option value="business">业务逻辑层</option>
                         <option value="controller">控制器</option>
                         <option value="view">视图</option>
@@ -76,7 +77,6 @@
                 loading(false);
                 if (resJson.Success) {
                     parent.dialogMsg('生成成功!');
-                    parent.dialogClose('form');
                 }
                 else {
                     dialogError(resJson.Msg);

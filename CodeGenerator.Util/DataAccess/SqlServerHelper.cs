@@ -90,8 +90,9 @@ from
         /// 通过连接字符串和表名获取数据库表的信息
         /// </summary>
         /// <param name="tableName">表名</param>
+        /// <param name="linkName">数据库名</param>
         /// <returns></returns>
-        public override List<TableInfo> GetDbTableInfo(string tableName)
+        public override List<TableInfo> GetDbTableInfo(string tableName, string linkName)
         {
             string sql = @"
 select 
