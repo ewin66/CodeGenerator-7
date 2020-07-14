@@ -592,6 +592,146 @@ namespace {nameSpace}
 
         #endregion
 
+        #region League
+        /// <summary>
+        /// 生成实体文件
+        /// </summary>
+        /// <param name="infos">表字段信息</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableDescription">表描述信息</param>
+        /// <param name="filePath">文件路径（包含文件名）</param>
+        /// <param name="nameSpace">实体命名空间</param>
+        /// <param name="schemaName">架构（模式）名</param>
+        public virtual void SaveLeagueEntityToFile(List<TableInfo> infos, string tableName, string tableDescription, string filePath, string nameSpace, string schemaName = null)
+        {
+            string properties = "";
+            string schema = "";
+            if (!schemaName.IsNullOrEmpty())
+                schema = $@", Schema = ""{schemaName}""";
+            infos.ForEach((item, index) =>
+            {
+                if (item.Name != "Id" && item.Name != "id")
+                {
+                    string isKey = item.IsKey ? $@"
+        [Key, Column(Order = {index + 1})]" : "";
+                    Type type = DbTypeStr_To_CsharpType(item.Type);
+                    string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                    string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                    string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>{isKey}
+        [Column(""{item.Name}"")]
+        public {type.Name}{isNullable} {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")} {{ get; set; }}
+";
+                    properties += newPropertyStr;
+                }
+            });
+            string fileStr =
+$@"using System;
+using System.ComponentModel.DataAnnotations.Schema;
+{_extraUsingNamespace}
+namespace {nameSpace}
+{{
+    /// <summary>
+    /// {tableDescription}
+    /// </summary>
+    [Table(""{tableName}""{schema})]
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}: InitEntityId
+    {{
+{properties}
+    }}
+}}";
+            FileHelper.WriteTxt(fileStr, filePath, FileMode.Create);
+        }
+
+        /// <summary>
+        /// 生成实体文件
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="tableDescription">表描述信息</param>
+        /// <param name="filePath">文件路径（包含文件名）</param>
+        /// <param name="nameSpace">实体命名空间</param>
+        /// <param name="schemaName">架构（模式）名</param>
+        public virtual void SaveLeagueDtoToFile(List<TableInfo> infos, string tableName, string tableDescription, string filePath, string nameSpace, string schemaName = null)
+        {
+            StringBuilder properties = new StringBuilder();
+            StringBuilder enumString = new StringBuilder();
+            string schema = "";
+            if (!schemaName.IsNullOrEmpty())
+                schema = $@", Schema = ""{schemaName}""";
+
+            infos.ForEach((item, index) =>
+            {
+                if (item.Name != "Id" && item.Name != "id")
+                {
+                    Type type = DbTypeStr_To_CsharpType(item.Type);
+                    string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                    string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                    string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public {type.Name}{isNullable} {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")} {{ get; set; }}
+";
+                    properties.Append(newPropertyStr);
+                }
+            });
+
+            infos.Where(f => f.Name.StartsWith("Is") || f.Name.StartsWith("is_")).ForEach((item, index) =>
+            {
+                Type type = DbTypeStr_To_CsharpType(item.Type);
+                string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public string {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "").Substring(2, System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "").Length - 2)}Value {{ get; set; }}
+";
+                enumString.Append(newPropertyStr);
+            });
+
+            infos.Where(f => f.Name == "Type" || f.Name == "State" || f.Name == "type" || f.Name == "state").ForEach((item, index) =>
+            {
+                Type type = DbTypeStr_To_CsharpType(item.Type);
+                string isNullable = item.IsNullable && type.IsValueType ? "?" : "";
+                string description = item.Description.IsNullOrEmpty() ? item.Name : item.Description;
+                string newPropertyStr =
+    $@"
+        /// <summary>
+        /// {description}
+        /// </summary>
+        public string {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(item.Name).Replace("_", "")}Value {{ get; set; }}
+";
+                enumString.Append(newPropertyStr);
+            });
+
+
+
+            string fileStr =
+$@"using System;
+using League.Entity.Enums;
+
+namespace {nameSpace}
+{{
+    /// <summary>
+    /// {tableDescription}
+    /// </summary>
+    public class {System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(tableName).Replace("_", "")}Dto: InitEntityId
+    {{
+{properties.ToString()}
+{enumString.ToString()}
+    }}
+}}";
+            FileHelper.WriteTxt(fileStr, filePath, FileMode.Create);
+        }
+
+        #endregion
+
         #endregion
     }
 }

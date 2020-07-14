@@ -86,6 +86,7 @@ WHERE TABLE_SCHEMA = @dbName";
         {
             string sql = @"select DISTINCT
 	a.COLUMN_NAME as Name,
+	a.ORDINAL_POSITION as ORDINAL_POSITION,
 	a.DATA_TYPE as Type,
 	(a.COLUMN_KEY = 'PRI') as IsKey,
 	(a.IS_NULLABLE = 'YES') as IsNullable,
